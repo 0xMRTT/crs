@@ -186,16 +186,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let template_url = cli.template_url;
 
-    let to_path: String;
-
-    if let Some(to) = cli.to.as_deref() {
-        to_path = to.to_string();
-    } else {
-        let url_parsed = Url::parse(&template_url)?;
-        let mut path_segments = url_parsed.path_segments().ok_or_else(|| "cannot be base")?;
-        _ = path_segments.next(); // username
-        to_path = path_segments.next().unwrap().to_string();
-    }
+    let template_store_path = Path::new("");
     let path = Path::new(&to_path);
 
     clone_repo(template_url, to_path.to_string())?;
@@ -203,6 +194,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("PATH : {}", to_path);
     std::env::set_current_dir(path)?;
     println!("DIRR : -> {:#?}", std::env::current_dir());
+
+    // Remove .git
 
     // START : Create global handelbars
     let mut handlebars = Handlebars::new();
@@ -213,7 +206,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // END: Create global handelbars
 
-    for entry in WalkDir::new("foo") {
+
+
+    for entry in WalkDir::new(".") {
         println!("{}", entry?.path().display());
     }
 

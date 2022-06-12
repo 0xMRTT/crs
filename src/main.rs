@@ -7,7 +7,7 @@ extern crate serde_derive;
 extern crate serde_json;
 use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
-use serde_json::{Value, Number};
+use serde_json::{Number, Value};
 
 use std::error::Error;
 use std::fs::File;
@@ -75,12 +75,21 @@ pub struct Team {
 }
 
 // produce some data
-pub fn make_data(template_name:String, template_url:String, template_author:String, template_username:String, json_data_path:String) -> Map<String, Json> {
+pub fn make_data(
+    template_name: String,
+    template_url: String,
+    template_author: String,
+    template_username: String,
+    json_data_path: String,
+) -> Map<String, Json> {
     let mut data = Map::new();
 
     data.insert("year".to_string(), to_json("2022"));
     data.insert("project_name".to_string(), to_json("C.R.S."));
-    data.insert("description".to_string(), to_json("Project generator with rust"));
+    data.insert(
+        "description".to_string(),
+        to_json("Project generator with rust"),
+    );
 
     let mut crs_data = Map::new();
     crs_data.insert("engine".to_string(), to_json(TYPES));
@@ -108,9 +117,19 @@ pub fn make_data(template_name:String, template_url:String, template_author:Stri
     data
 }
 
-fn generate_file(handlebars: &mut handlebars::Handlebars, template:&str, output_file:&str, json_data_file:&str) -> Result<(), Box<dyn Error>> {
-
-    let data = make_data("basic".to_string(), "https://github.com/0xMRTT/basic-template".to_string(), "0xMRTT".to_string(), "0xMRTT".to_string(), json_data_file.to_string());
+fn generate_file(
+    handlebars: &mut handlebars::Handlebars,
+    template: &str,
+    output_file: &str,
+    json_data_file: &str,
+) -> Result<(), Box<dyn Error>> {
+    let data = make_data(
+        "basic".to_string(),
+        "https://github.com/0xMRTT/basic-template".to_string(),
+        "0xMRTT".to_string(),
+        "0xMRTT".to_string(),
+        json_data_file.to_string(),
+    );
 
     handlebars
         .register_template_file("template", template)
@@ -121,9 +140,7 @@ fn generate_file(handlebars: &mut handlebars::Handlebars, template:&str, output_
     handlebars.render_to_write("template", &data, &mut output_file)?;
     println!("{} generated", output_file_path);
     Ok(())
-
 }
-
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
@@ -137,7 +154,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // END: Create global handelbars
 
-
-    generate_file(&mut handlebars, "./src/template.hbs", "target/README.md", "./src/data.json")?;
+    generate_file(
+        &mut handlebars,
+        "./src/template.hbs",
+        "target/README.md",
+        "./src/data.json",
+    )?;
     Ok(())
 }

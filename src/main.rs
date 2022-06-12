@@ -151,14 +151,8 @@ fn generate_file(
 }
 
 fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error>> {
-    let url_parsed = Url::parse(&url)?;
-
-    let mut final_path = to;
-    if final_path == ".".to_string() {
-        let mut path_segments = url_parsed.path_segments().ok_or_else(|| "cannot be base")?;
-        _ =  path_segments.next(); // username
-        final_path = path_segments.next().unwrap().to_string();
-    }
+    let final_path = to;
+    
     let _repo = match Repository::clone(&url, final_path) {
         Ok(repo) => return Ok(repo),
         Err(e) => panic!("failed to clone: {}", e),
@@ -191,20 +185,27 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let template_url = cli.template_url;
 
-    let to_path:String;
+    let to_path: String;
 
     if let Some(to) = cli.to.as_deref() {
         to_path = to.to_string();
     } else {
-        to_path = ".".to_string();
+        let url_parsed = Url::parse(&template_url)?;
+        let mut path_segments = url_parsed.path_segments().ok_or_else(|| "cannot be base")?;
+        _ =  path_segments.next(); // username
+        to_path = path_segments.next().unwrap().to_string();
     }
     
-
+    let path = Path::new(&to_path);
 
     clone_repo(
         template_url,
-        to_path,
+        to_path.to_string(),
     )?;
+
+    println!("PATH : {}", to_path);
+    std::env::set_current_dir(path)?;
+    println!("DIRR : -> {:#?}", std::env::current_dir());
 
     // START : Create global handelbars
     let mut handlebars = Handlebars::new();

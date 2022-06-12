@@ -30,7 +30,7 @@ And finally run crs
 ## Usage
 
 ```
-$ crs --help
+$ crs https://github.com/0xMRTT/rust-template
 ```
 
 ## Thanks

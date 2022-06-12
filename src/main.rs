@@ -128,11 +128,14 @@ fn generate_file(handlebars: &mut handlebars::Handlebars, template:&str, output_
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
+    // START : Create global handelbars
     let mut handlebars = Handlebars::new();
 
     handlebars.register_helper("format", Box::new(format_helper));
     handlebars.register_helper("ranking_label", Box::new(rank_helper));
     // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
+
+    // END: Create global handelbars
 
 
     generate_file(&mut handlebars, "./src/template.hbs", "target/README.md", "./src/data.json")?;

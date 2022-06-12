@@ -49,3 +49,5 @@ And thanks to the creators and contributors of this awesome rust crates:
 * git2 
 * clap 
 * url
+* walkdir
+* platform-dirs 

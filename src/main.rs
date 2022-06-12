@@ -9,23 +9,24 @@ use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
 use serde_json::{Number, Value};
 
-use std::env;
-use std::error::Error;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::Path;
-
 use git2::Repository;
-
 use handlebars::{
     to_json, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
 };
+use std::env;
+use std::error::Error;
+use std::fs;
+use std::fs::File;
+use std::io::{Read, Write};
+use std::path;
+use std::path::Path;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
 use url::{ParseError, Url};
 
+use platform_dirs::{AppDirs, UserDirs};
 use walkdir::WalkDir;
 
 // define a custom helper
@@ -78,14 +79,6 @@ fn rank_helper(
 
 static TYPES: &'static str = "serde_json";
 
-// define some data
-#[derive(Serialize)]
-pub struct Team {
-    name: String,
-    pts: u16,
-}
-
-// produce some data
 pub fn make_data(
     template_name: String,
     template_url: String,
@@ -153,7 +146,7 @@ fn generate_file(
     Ok(())
 }
 
-fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error>> {
+fn clone_repo(url: String, to: std::path::PathBuf) -> Result<git2::Repository, Box<dyn Error>> {
     let final_path = to;
     let _repo = match Repository::clone(&url, final_path) {
         Ok(repo) => return Ok(repo),
@@ -186,12 +179,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let template_url = cli.template_url;
 
-    let template_store_path = Path::new("");
-    let path = Path::new(&to_path);
+    let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
+    let template_store_path = &app_dirs.data_dir;
 
-    clone_repo(template_url, to_path.to_string())?;
+    fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
-    println!("PATH : {}", to_path);
+    clone_repo(template_url, app_dirs.data_dir)?;
+
+    println!("PATH : {}", template_store_path + Path::new(""));
     std::env::set_current_dir(path)?;
     println!("DIRR : -> {:#?}", std::env::current_dir());
 
@@ -205,8 +200,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
 
     // END: Create global handelbars
-
-
 
     for entry in WalkDir::new(".") {
         println!("{}", entry?.path().display());

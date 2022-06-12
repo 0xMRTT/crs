@@ -177,21 +177,35 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let cli = Cli::parse();
 
+    
     let template_url = cli.template_url;
-
+    println!("Generating a new project using {}", template_url);
+    
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let template_store_path = &app_dirs.data_dir;
 
+    println!("Creating store directory in {}", template_store_path.to_str().unwrap());
     fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
-    clone_repo(template_url, app_dirs.data_dir)?;
+    let url = Url::parse(&template_url)?;
+    let mut path_segments = url.path_segments().ok_or_else(|| "cannot be base")?;
 
-    println!("PATH : {}", template_store_path + Path::new(""));
-    std::env::set_current_dir(path)?;
-    println!("DIRR : -> {:#?}", std::env::current_dir());
+    let username = path_segments.next();
+    let template_name = path_segments.next();
 
-    // Remove .git
+    let mut clone_to = app_dirs.data_dir;
+    clone_to.push(template_name.unwrap());
 
+    println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
+    println!("Clone {} to {:#?}", template_url, clone_to);
+
+    clone_repo(template_url, clone_to)?;
+
+    println!("Successfuly downloaded template.");
+
+    println!("Start generating new project...");
+
+    /*
     // START : Create global handelbars
     let mut handlebars = Handlebars::new();
 
@@ -210,6 +224,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         "./src/template.hbs",
         "target/README.md",
         "./src/data.json",
-    )?;
+    )?;*/
     Ok(())
 }

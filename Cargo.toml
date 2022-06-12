@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 handlebars = "4.3.1"
+serde_json = "1.0.81"

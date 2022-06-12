@@ -9,10 +9,10 @@ use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
 use serde_json::{Number, Value};
 
+use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::{Read, Write};
-use std::env;
 use std::path::Path;
 
 use git2::Repository;
@@ -24,7 +24,10 @@ use handlebars::{
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
-use url::{Url, ParseError};
+use url::{ParseError, Url};
+
+use walkdir::WalkDir;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -152,7 +155,6 @@ fn generate_file(
 
 fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error>> {
     let final_path = to;
-    
     let _repo = match Repository::clone(&url, final_path) {
         Ok(repo) => return Ok(repo),
         Err(e) => panic!("failed to clone: {}", e),
@@ -174,9 +176,8 @@ struct Cli {
     debug: usize,
 
     #[clap(short, long)]
-    to: Option<String>
+    to: Option<String>,
 }
-
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
@@ -192,16 +193,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         let url_parsed = Url::parse(&template_url)?;
         let mut path_segments = url_parsed.path_segments().ok_or_else(|| "cannot be base")?;
-        _ =  path_segments.next(); // username
+        _ = path_segments.next(); // username
         to_path = path_segments.next().unwrap().to_string();
     }
-    
     let path = Path::new(&to_path);
 
-    clone_repo(
-        template_url,
-        to_path.to_string(),
-    )?;
+    clone_repo(template_url, to_path.to_string())?;
 
     println!("PATH : {}", to_path);
     std::env::set_current_dir(path)?;
@@ -215,6 +212,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
 
     // END: Create global handelbars
+
+    for entry in WalkDir::new("foo") {
+        println!("{}", entry?.path().display());
+    }
 
     generate_file(
         &mut handlebars,

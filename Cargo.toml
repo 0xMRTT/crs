@@ -12,3 +12,4 @@ serde_derive = "1.0.75"
 serde = "1.0.0"
 env_logger = "0.9"
 git2 = "0.14.4"
+clap = { version = "3.1.18", features = ["derive"] }

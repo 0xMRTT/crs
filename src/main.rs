@@ -95,7 +95,7 @@ pub fn make_data(template_name:String, template_url:String, template_author:Stri
 
     data.insert("crs".to_string(), to_json(crs_data));
 
-    let mut json_data = {
+    let json_data = {
         // Load the first file into a string.
         let text = std::fs::read_to_string(json_data_path).unwrap();
 
@@ -103,7 +103,7 @@ pub fn make_data(template_name:String, template_url:String, template_author:Stri
         serde_json::from_str::<Value>(&text).unwrap()
     };
 
-    data.insert("config".to_string(), json_data);
+    data.insert("d".to_string(), json_data);
     println!("{:#?}", data);
     data
 }
@@ -116,7 +116,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     handlebars.register_helper("ranking_label", Box::new(rank_helper));
     // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
 
-    let data = make_data("basic".to_string(), "https://github.com/0xMRTT/basic-template".to_string(), "0xMRTT".to_string(), "0xMRTT".to_string(), "./src/data.json");
+    let data = make_data("basic".to_string(), "https://github.com/0xMRTT/basic-template".to_string(), "0xMRTT".to_string(), "0xMRTT".to_string(), "./src/data.json".to_string());
 
     handlebars
         .register_template_file("template", "./src/template.hbs")

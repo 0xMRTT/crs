@@ -19,6 +19,10 @@ use handlebars::{
     to_json, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
 };
 
+use clap::{Parser, Subcommand};
+use std::path::PathBuf;
+
+use url::{Url, ParseError};
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -145,18 +149,59 @@ fn generate_file(
 }
 
 fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error>> {
-    let _repo = match Repository::clone(&url, to) {
+    let url_parsed = Url::parse(&url)?;
+
+    let mut final_path = to;
+    if final_path == ".".to_string() {
+        let mut path_segments = url_parsed.path_segments().ok_or_else(|| "cannot be base")?;
+        _ =  path_segments.next(); // username
+        final_path = path_segments.next().unwrap().to_string();
+    }
+    let _repo = match Repository::clone(&url, final_path) {
         Ok(repo) => return Ok(repo),
         Err(e) => panic!("failed to clone: {}", e),
     };
 }
 
+#[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
+struct Cli {
+    /// Optional name to operate on
+    template_url: String,
+
+    /// Sets a custom config file
+    #[clap(short, long, parse(from_os_str), value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// Turn debugging information on
+    #[clap(short, long, parse(from_occurrences))]
+    debug: usize,
+
+    #[clap(short, long)]
+    to: Option<String>
+}
+
+
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
+    let cli = Cli::parse();
+
+    let template_url = cli.template_url;
+
+    let to_path:String;
+
+    if let Some(to) = cli.to.as_deref() {
+        to_path = to.to_string();
+    } else {
+        to_path = ".".to_string();
+    }
+    
+
+
     clone_repo(
-        "https://github.com/0xMRTT/crs".to_string(),
-        "/home/user/CRS".to_string(),
+        template_url,
+        to_path,
     )?;
 
     // START : Create global handelbars

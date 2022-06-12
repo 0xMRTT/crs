@@ -145,7 +145,7 @@ fn generate_file(
 }
 
 fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error>> {
-    let repo = match Repository::clone(&url, to) {
+    let _repo = match Repository::clone(&url, to) {
         Ok(repo) => return Ok(repo),
         Err(e) => panic!("failed to clone: {}", e),
     };
@@ -154,7 +154,10 @@ fn clone_repo(url: String, to: String) -> Result<git2::Repository, Box<dyn Error
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    clone_repo("https://github.com/0xMRTT/crs".to_string(), "/home/user/CRS".to_string())?;
+    clone_repo(
+        "https://github.com/0xMRTT/crs".to_string(),
+        "/home/user/CRS".to_string(),
+    )?;
 
     // START : Create global handelbars
     let mut handlebars = Handlebars::new();

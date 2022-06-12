@@ -108,22 +108,31 @@ pub fn make_data(template_name:String, template_url:String, template_author:Stri
     data
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
+fn generate_file(template:&str, output_file:&str, json_data_file:&str) -> Result<(), Box<dyn Error>> {
+
     let mut handlebars = Handlebars::new();
 
     handlebars.register_helper("format", Box::new(format_helper));
     handlebars.register_helper("ranking_label", Box::new(rank_helper));
     // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
 
-    let data = make_data("basic".to_string(), "https://github.com/0xMRTT/basic-template".to_string(), "0xMRTT".to_string(), "0xMRTT".to_string(), "./src/data.json".to_string());
+    let data = make_data("basic".to_string(), "https://github.com/0xMRTT/basic-template".to_string(), "0xMRTT".to_string(), "0xMRTT".to_string(), json_data_file.to_string());
 
     handlebars
-        .register_template_file("template", "./src/template.hbs")
+        .register_template_file("template", template)
         .unwrap();
 
-    let mut output_file = File::create("target/README.md")?;
+    let output_file_path = output_file;
+    let mut output_file = File::create(output_file)?;
     handlebars.render_to_write("template", &data, &mut output_file)?;
-    println!("target/README.md generated");
+    println!("{} generated", output_file_path);
+    Ok(())
+
+}
+
+
+fn main() -> Result<(), Box<dyn Error>> {
+    env_logger::init();
+    generate_file("./src/template.hbs", "target/README.md", "./src/data.json")?;
     Ok(())
 }

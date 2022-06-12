@@ -15,3 +15,4 @@ git2 = "0.14.4"
 clap = { version = "3.1.18", features = ["derive"] }
 url = "2.2.2"
 walkdir = "2"
+platform-dirs = "0.3.0"

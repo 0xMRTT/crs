@@ -192,6 +192,7 @@ fn list_installed() {
 
 fn generate_name() {
     // WIP
+    // Generate file/folder name using handlebars
 }
 
 fn generate_folder() {

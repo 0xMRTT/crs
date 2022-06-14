@@ -235,7 +235,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         if clone_to.exists() {
             println!("Template already downloaded. Updating...");
             env::set_current_dir(template_store_path)?;
-            let to_delete = &format!("{}", template_name.unwrap());
+            let to_delete = template_name.unwrap();
             let path_to_delete = Path::new(&to_delete);
             println!("Deleting old template ({})", &to_delete);
             fs::remove_dir_all(path_to_delete)?;

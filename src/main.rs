@@ -178,10 +178,17 @@ struct Cli {
 fn list_installed() {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let template_store_path = &app_dirs.data_dir.clone();
-    for entry in WalkDir::new(&template_store_path) {
-        println!("{}", entry.expect("LOL").path().display());use std::fs;
 
+    let paths = fs::read_dir(template_store_path).unwrap();
+
+    let mut number = 0;
+    println!("Installed templates:");
+    for path in paths {
+        println!("{}", path.unwrap().path().display().to_string());
+        number += 1;
     }
+    println!("{} templates installed", number);
+    
 
 }
 

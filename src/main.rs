@@ -179,7 +179,8 @@ fn list_installed() {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let template_store_path = &app_dirs.data_dir.clone();
     for entry in WalkDir::new(&template_store_path) {
-        println!("{}", entry.expect("LOL").path().display());
+        println!("{}", entry.expect("LOL").path().display());use std::fs;
+
     }
 
 }
@@ -195,7 +196,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         } else {
 
         
-        let template_url = cli.template_url;
+        let template_url = cli.template_url.unwrap();
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
@@ -204,7 +205,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Creating store directory in {}", template_store_path.to_str().unwrap());
         fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
-        let url = Url::parse(&template_url)?;
+        let url = Url::parse(&template_url.as_str())?;
         let mut path_segments = url.path_segments().ok_or_else(|| "cannot be base")?;
 
         let username = path_segments.next();

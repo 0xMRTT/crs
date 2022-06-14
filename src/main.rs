@@ -28,7 +28,7 @@ use url::{ParseError, Url};
 
 use platform_dirs::{AppDirs, UserDirs};
 use walkdir::WalkDir;
-
+use std::process::exit;
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -158,7 +158,7 @@ fn clone_repo(url: String, to: std::path::PathBuf) -> Result<git2::Repository, B
 #[clap(author, version, about, long_about = None)]
 struct Cli {
     /// Optional name to operate on
-    template_url: String,
+    template_url: Option<String>,
 
     /// Sets a custom config file
     #[clap(short, long, parse(from_os_str), value_name = "FILE")]
@@ -170,6 +170,18 @@ struct Cli {
 
     #[clap(short, long)]
     to: Option<String>,
+
+    #[clap(short, long)]
+    list_installed: bool,
+}
+
+fn list_installed() {
+    let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
+    let template_store_path = &app_dirs.data_dir.clone();
+    for entry in WalkDir::new(&template_store_path) {
+        println!("{}", entry.expect("LOL").path().display());
+    }
+
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -177,64 +189,70 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let cli = Cli::parse();
 
-    
-    let template_url = cli.template_url;
-    println!("Generating a new project using {}", template_url);
+    if cli.list_installed {
+        list_installed();
+        exit(0);
+        } else {
 
-    let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
-    let template_store_path = &app_dirs.data_dir.clone();
-
-    println!("Creating store directory in {}", template_store_path.to_str().unwrap());
-    fs::create_dir_all(&app_dirs.data_dir).unwrap();
-
-    let url = Url::parse(&template_url)?;
-    let mut path_segments = url.path_segments().ok_or_else(|| "cannot be base")?;
-
-    let username = path_segments.next();
-    let template_name = path_segments.next();
-
-    let mut clone_to = app_dirs.data_dir;
-    clone_to.push(template_name.unwrap());
-
-    println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
-    
-    if clone_to.exists() {
-        println!("Template already downloaded. Updating...");
-        env::set_current_dir(template_store_path)?;
-        let to_delete = &format!("{}",template_name.unwrap());
-        let path_to_delete = Path::new(&to_delete);
-        println!("Deleting old template ({})", &to_delete);
         
-        fs::remove_dir_all(path_to_delete)?;
+        let template_url = cli.template_url;
+        println!("Generating a new project using {}", template_url);
+
+        let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
+        let template_store_path = &app_dirs.data_dir.clone();
+
+        println!("Creating store directory in {}", template_store_path.to_str().unwrap());
+        fs::create_dir_all(&app_dirs.data_dir).unwrap();
+
+        let url = Url::parse(&template_url)?;
+        let mut path_segments = url.path_segments().ok_or_else(|| "cannot be base")?;
+
+        let username = path_segments.next();
+        let template_name = path_segments.next();
+
+        let mut clone_to = app_dirs.data_dir;
+        clone_to.push(template_name.unwrap());
+
+        println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
+        
+        if clone_to.exists() {
+            println!("Template already downloaded. Updating...");
+            env::set_current_dir(template_store_path)?;
+            let to_delete = &format!("{}",template_name.unwrap());
+            let path_to_delete = Path::new(&to_delete);
+            println!("Deleting old template ({})", &to_delete);
+            
+            fs::remove_dir_all(path_to_delete)?;
+        }
+        
+        println!("Clone {} to {:#?}", template_url, clone_to);
+
+        clone_repo(template_url, clone_to).expect("");
+
+        println!("Successfuly downloaded template.");
+
+        println!("Start generating new project...");
+
+        /*
+        // START : Create global handelbars
+        let mut handlebars = Handlebars::new();
+
+        handlebars.register_helper("format", Box::new(format_helper));
+        handlebars.register_helper("ranking_label", Box::new(rank_helper));
+        // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
+
+        // END: Create global handelbars
+
+        for entry in WalkDir::new(".") {
+            println!("{}", entry?.path().display());
+        }
+
+        generate_file(
+            &mut handlebars,
+            "./src/template.hbs",
+            "target/README.md",
+            "./src/data.json",
+        )?;*/
+        Ok(())
     }
-    
-    println!("Clone {} to {:#?}", template_url, clone_to);
-
-    clone_repo(template_url, clone_to).expect("");
-
-    println!("Successfuly downloaded template.");
-
-    println!("Start generating new project...");
-
-    /*
-    // START : Create global handelbars
-    let mut handlebars = Handlebars::new();
-
-    handlebars.register_helper("format", Box::new(format_helper));
-    handlebars.register_helper("ranking_label", Box::new(rank_helper));
-    // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
-
-    // END: Create global handelbars
-
-    for entry in WalkDir::new(".") {
-        println!("{}", entry?.path().display());
-    }
-
-    generate_file(
-        &mut handlebars,
-        "./src/template.hbs",
-        "target/README.md",
-        "./src/data.json",
-    )?;*/
-    Ok(())
 }

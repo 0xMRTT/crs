@@ -27,8 +27,8 @@ use std::path::PathBuf;
 use url::{ParseError, Url};
 
 use platform_dirs::{AppDirs, UserDirs};
-use walkdir::WalkDir;
 use std::process::exit;
+use walkdir::WalkDir;
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -188,8 +188,6 @@ fn list_installed() {
         number += 1;
     }
     println!("{} templates installed", number);
-    
-
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -200,16 +198,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.list_installed {
         list_installed();
         exit(0);
-        } else {
-
-        
+    } else {
         let template_url = cli.template_url.unwrap();
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
         let template_store_path = &app_dirs.data_dir.clone();
 
-        println!("Creating store directory in {}", template_store_path.to_str().unwrap());
+        println!(
+            "Creating store directory in {}",
+            template_store_path.to_str().unwrap()
+        );
         fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
         let url = Url::parse(&template_url.as_str())?;
@@ -222,17 +221,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         clone_to.push(template_name.unwrap());
 
         println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
-        
         if clone_to.exists() {
             println!("Template already downloaded. Updating...");
             env::set_current_dir(template_store_path)?;
-            let to_delete = &format!("{}",template_name.unwrap());
+            let to_delete = &format!("{}", template_name.unwrap());
             let path_to_delete = Path::new(&to_delete);
             println!("Deleting old template ({})", &to_delete);
-            
             fs::remove_dir_all(path_to_delete)?;
         }
-        
         println!("Clone {} to {:#?}", template_url, clone_to);
 
         clone_repo(template_url, clone_to).expect("");

@@ -184,7 +184,7 @@ fn list_installed() {
     let mut number = 0;
     println!("Installed templates:");
     for path in paths {
-        println!("{}", path.unwrap().path().display().to_string());
+        println!(" - {}", path.unwrap().path().display().to_string());
         number += 1;
     }
     println!("{} templates installed", number);

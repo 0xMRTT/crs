@@ -209,7 +209,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.list_installed {
         list_installed();
         exit(0);
-    } else {
+    } else if cli.template_url.is_some() {
         let template_url = cli.template_url.unwrap();
         println!("Generating a new project using {}", template_url);
 
@@ -268,6 +268,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             "target/README.md",
             "./src/data.json",
         )?;*/
-        Ok(())
     }
+    else {
+        println!("https://github.com/0xMRTT/basic-template");
+    }
+    Ok(())
 }

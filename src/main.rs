@@ -190,6 +190,16 @@ fn list_installed() {
     println!("{} templates installed", number);
 }
 
+fn generate_name() {
+    // WIP
+}
+
+fn generate_folder() {
+    // WIP
+    // Create new folder using generate_name
+    // Use recursive call to generate_file
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 

@@ -204,13 +204,12 @@ fn generate_folder(
 
     let paths = fs::read_dir(folder_path.as_str()).unwrap();
     let folder_content = paths.map(|path| path.unwrap().path());
-    
     for path in folder_content {
         let file_name = path.file_name().unwrap().to_str().unwrap();
         println!(" - {}", file_name);
         println!(" |- {}", path.display());
 
-        let mut new : String= to.clone();
+        let mut new: String = to.clone();
         new.push_str("/");
         new.push_str(file_name);
         println!(" |--> {}", new);
@@ -218,19 +217,20 @@ fn generate_folder(
             if path.display().to_string().contains(".git") {
                 println!(" |--> Skipping");
                 continue;
-            } 
+            }
             let new_folder_path = folder_path.clone() + "/" + file_name;
             println!(" |---> {}", new_folder_path);
             generate_folder(handlebars, &new_folder_path, &new, data);
         } else {
-            generate_file(handlebars, path.display().to_string().as_str(), new.as_str(), data).unwrap();
+            generate_file(
+                handlebars,
+                path.display().to_string().as_str(),
+                new.as_str(),
+                data,
+            )
+            .unwrap();
         }
     }
-            
-
-    
-
-
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -308,7 +308,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             data,
         )?;*/
         let folder_path = clone_to.display().to_string() + "/template";
-        generate_folder(&mut handlebars, &folder_path, &"generated".to_string(), &data);
+        generate_folder(
+            &mut handlebars,
+            &folder_path,
+            &"generated".to_string(),
+            &data,
+        );
     } else {
         println!("https://github.com/0xMRTT/basic-template");
     }

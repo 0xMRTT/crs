@@ -1,5 +1,5 @@
 name: Add Emoji
-on: pull_request
+on: push
 
 jobs:
   add-emoji:

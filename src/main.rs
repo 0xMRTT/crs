@@ -236,8 +236,15 @@ fn generate_folder(
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
-
+    
+    
     let cli = Cli::parse();
+    
+    let mut to:String = "generated".to_string();
+    
+    if cli.to.is_some() {
+        to = cli.to.unwrap();
+    }
 
     if cli.list_installed {
         list_installed();
@@ -309,10 +316,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             data,
         )?;*/
         let folder_path = clone_to.display().to_string() + "/template";
+        
+        if to != "generated".to_string() {
+            to = generate_name(&mut handlebars, &to, &data);
+        }
         generate_folder(
             &mut handlebars,
             &folder_path,
-            &"generated".to_string(),
+            &to,
             &data,
         );
     } else {

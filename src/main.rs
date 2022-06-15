@@ -77,7 +77,7 @@ fn rank_helper(
     Ok(())
 }
 
-static TYPES: &'static str = "serde_json";
+static TYPES: &str = "serde_json";
 
 pub fn make_data(
     template_name: String,

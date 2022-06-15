@@ -1,5 +1,7 @@
 # C.R.S.
 
+⚠️ Work In Progress ⚠️ Not ready yet
+
 Create a new project from a template
 
 ## Installation

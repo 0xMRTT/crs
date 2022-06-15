@@ -180,6 +180,11 @@ fn list_installed() {
 }
 
 fn generate_name(handlebars: &mut handlebars::Handlebars, original_name: String, data: Map<String, Json>) -> String{
+    // Generate the name of the template
+    // 
+    // Example:
+    //   println!("{}", generate_name(&mut handlebars, "{{d.project_name}}.md".to_string(), data));
+
     return handlebars.render_template(original_name.as_str(), &data).unwrap();
 }
 

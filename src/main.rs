@@ -222,7 +222,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
         fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
-        let url = Url::parse(&template_url.as_str())?;
+        let url = Url::parse(template_url.as_str())?;
         let mut path_segments = url.path_segments().ok_or_else(|| "cannot be base")?;
 
         let username = path_segments.next();

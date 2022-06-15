@@ -29,6 +29,7 @@ use url::{ParseError, Url};
 use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
+use chrono::Datelike;
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -87,8 +88,10 @@ pub fn make_data(
     json_data_path: String,
 ) -> Map<String, Json> {
     let mut data = Map::new();
-
-    data.insert("year".to_string(), to_json("2022"));
+    let current_date = chrono::Utc::now();
+    data.insert("year".to_string(), to_json(current_date.year()));
+    data.insert("month".to_string(), to_json(current_date.month()));
+    data.insert("day".to_string(), to_json(current_date.day()));
 
     let mut crs_data = Map::new();
     crs_data.insert("engine".to_string(), to_json(TYPES));

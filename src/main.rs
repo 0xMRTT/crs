@@ -125,16 +125,8 @@ fn generate_file(
     handlebars: &mut handlebars::Handlebars,
     template: &str,
     output_file: &str,
-    json_data_file: &str,
+    data: Map<String, Json>,
 ) -> Result<(), Box<dyn Error>> {
-    let data = make_data(
-        "basic".to_string(),
-        "https://github.com/0xMRTT/basic-template".to_string(),
-        "0xMRTT".to_string(),
-        "0xMRTT".to_string(),
-        json_data_file.to_string(),
-    );
-
     handlebars
         .register_template_file("template", template)
         .unwrap();
@@ -173,6 +165,9 @@ struct Cli {
 
     #[clap(short, long)]
     list_installed: bool,
+
+    #[clap(short, long, parse(from_os_str), value_name = "FILE")]
+    json_data_path: Option<PathBuf>,
 }
 
 fn list_installed() {
@@ -190,9 +185,8 @@ fn list_installed() {
     println!("{} templates installed", number);
 }
 
-fn generate_name() {
-    // WIP
-    // Generate file/folder name using handlebars
+fn generate_name(original_name: String) {
+    
 }
 
 fn generate_folder() {
@@ -209,8 +203,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.list_installed {
         list_installed();
         exit(0);
-    } else if cli.template_url.is_some() {
+    } else if cli.template_url.is_some() && cli.json_data_path.is_some() {
         let template_url = cli.template_url.unwrap();
+        let json_data_file = cli.json_data_path.unwrap();
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
@@ -249,6 +244,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Start generating new project...");
 
         println!("WIP");
+
+        let data = make_data(
+            "basic".to_string(),
+            "https://github.com/0xMRTT/basic-template".to_string(),
+            "0xMRTT".to_string(),
+            "0xMRTT".to_string(),
+            json_data_file.display().to_string(),
+        );
 
         /*
         // START : Create global handelbars

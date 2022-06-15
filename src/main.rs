@@ -117,7 +117,6 @@ pub fn make_data(
     };
 
     data.insert("d".to_string(), json_data);
-    println!("{:#?}", data);
     data
 }
 
@@ -186,7 +185,7 @@ fn list_installed() {
 }
 
 fn generate_name(original_name: String) {
-    
+    // WIP
 }
 
 fn generate_folder() {
@@ -253,7 +252,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             json_data_file.display().to_string(),
         );
 
-        /*
+        println!("Using data from {:#?}", json_data_file.display());
+        
         // START : Create global handelbars
         let mut handlebars = Handlebars::new();
 
@@ -263,16 +263,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // END: Create global handelbars
 
-        for entry in WalkDir::new(".") {
-            println!("{}", entry?.path().display());
-        }
-
         generate_file(
             &mut handlebars,
-            "./src/template.hbs",
-            "target/README.md",
-            "./src/data.json",
-        )?;*/
+            "~/Projects/crs/src/template.hbs",
+            "README.md",
+            data,
+        )?;
     }
     else {
         println!("https://github.com/0xMRTT/basic-template");

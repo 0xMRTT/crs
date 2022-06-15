@@ -121,16 +121,12 @@ fn generate_file(
     output_file: &str,
     data: &Map<String, Json>,
 ) -> Result<(), Box<dyn Error>> {
-    println!("REGISTERING TEMPLATE => {}", template);
     handlebars.register_template_string(template, fs::read_to_string(template)?)?;
     //handlebars.register_template_file(template, template).expect("Failed to register template");
-    println!("REGISTERED TEMPLATE => {}", template);
     let output_file_path = output_file;
-    println!("OUTPUT FILE => {}", output_file_path);
     let mut output_file = File::create(output_file)?;
-    println!("RENDERING {}", output_file_path);
     handlebars.render_to_write(template, &data, &mut output_file)?;
-    println!("{} generated", output_file_path);
+    println!(" |--> {} generated", output_file_path);
     Ok(())
 }
 

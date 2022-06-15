@@ -264,7 +264,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "README.md",
             data,
         )?;*/
-        println!("{}", generate_name(&mut handlebars, "{{project_name}}.md".to_string(), data));
+        println!("{}", generate_name(&mut handlebars, "{{d.project_name}}.md".to_string(), data));
         
     }
     else {

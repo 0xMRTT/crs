@@ -212,6 +212,7 @@ fn generate_folder(
         let mut new: String = to.clone();
         new.push_str("/");
         new.push_str(file_name);
+        new = generate_name(handlebars, &new, data);
         println!(" |--> {}", new);
         if path.is_dir() {
             if path.display().to_string().contains(".git") {

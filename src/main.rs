@@ -184,11 +184,11 @@ fn list_installed() {
     println!("{} templates installed", number);
 }
 
-fn generate_name(original_name: String) {
-    // WIP
+fn generate_name(handlebars: &mut handlebars::Handlebars, original_name: String, data: Map<String, Json>) -> String{
+    return handlebars.render_template(original_name.as_str(), &data).unwrap();
 }
 
-fn generate_folder() {
+fn generate_folder(handlebars: &mut handlebars::Handlebars,) {
     // WIP
     // Create new folder using generate_name
     // Use recursive call to generate_file
@@ -263,12 +263,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // END: Create global handelbars
 
-        generate_file(
+        /*generate_file(
             &mut handlebars,
             "~/Projects/crs/src/template.hbs",
             "README.md",
             data,
-        )?;
+        )?;*/
+        println!("{}", generate_name(&mut handlebars, "{{project_name}}.md".to_string(), data));
+        
     }
     else {
         println!("https://github.com/0xMRTT/basic-template");

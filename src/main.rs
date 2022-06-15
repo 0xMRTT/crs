@@ -198,42 +198,42 @@ fn generate_name(
 
 fn generate_folder(
     handlebars: &mut handlebars::Handlebars,
-    folder_path: String,
+    folder_path: &String,
     to: &String,
-    base: &String,
     data: &Map<String, Json>,
-    template_store_path: &String,
 ) {
-    // WIP
-    // Create new folder using generate_name
-    // Use recursive call to generate_file
-    println!("");
-    println!("======");
+    println!("Generating project to {} from {}", to, folder_path);
+
+    fs::create_dir_all(&to.clone()).unwrap();
+
     let paths = fs::read_dir(folder_path.as_str()).unwrap();
     let folder_content = paths.map(|path| path.unwrap().path());
-    let new_dir = generate_name(handlebars, &to, data);
-    println!("GENERATING FOLDER => {}", new_dir);
-    println!("I WILL REMOVE {} FROM EACH PATH", template_store_path);
-    fs::create_dir_all(new_dir).expect("Failed to create directory. Maybe the directory already exist ?");
+    
     for path in folder_content {
-        println!("GENERATE FILE => {}", path.display());
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+        println!(" - {}", file_name);
+        println!(" |- {}", path.display());
+
+        let mut new : String= to.clone();
+        new.push_str("/");
+        new.push_str(file_name);
+        println!(" |--> {}", new);
         if path.is_dir() {
-            println!("FOLDER => {}", path.display());
-            if path.display().to_string().contains(".git") { // Git folder
+            if path.display().to_string().contains(".git") {
+                println!(" |--> Skipping");
                 continue;
-            }
-            let new_dir_name = generate_name(handlebars, &path.display().to_string().replace(template_store_path, base), data);
-            generate_folder(handlebars, path.to_str().unwrap().to_string(),&new_dir_name, base, data, template_store_path);
+            } 
+            let new_folder_path = folder_path.clone() + "/" + file_name;
+            println!(" |---> {}", new_folder_path);
+            generate_folder(handlebars, &new_folder_path, &new, data);
         } else {
-            println!("FILE => {}", path.display());
-            //let new_file_name = ;
-            //println!("NEW FILE NAME => {}", .as_str());
-            let new_name = generate_name(handlebars, &path.display().to_string().replace(template_store_path, to), data);
-            println!("NEW FILE NAME => {}", new_name);
-            println!("PATH : {}", path.display());
-            generate_file(handlebars, path.display().to_string().as_str(), new_name.as_str(), data).expect("Failed to generate file");
+            generate_file(handlebars, path.display().to_string().as_str(), new.as_str(), data).unwrap();
         }
     }
+            
+
+    
+
 
 }
 
@@ -311,7 +311,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "README.md",
             data,
         )?;*/
-        generate_folder(&mut handlebars, clone_to.display().to_string(), &"generated".to_string(), &"generated".to_string(), &data, &clone_to.to_str().unwrap().to_string());
+        generate_folder(&mut handlebars, &clone_to.display().to_string(), &"generated".to_string(), &data);
     } else {
         println!("https://github.com/0xMRTT/basic-template");
     }

@@ -30,6 +30,9 @@ use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
 use chrono::Datelike;
+use inquire::*;
+use inquire::error::InquireError;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -234,6 +237,42 @@ fn generate_folder(
             )
             .unwrap();
         }
+    }
+}
+
+fn ask_text(question: &str) -> String {
+    let response = Text::new(question).prompt();
+
+    match response {
+        Ok(response) => response.to_string(),
+        Err(_) => println!("An error happened, try again later or submit a bug report"),
+    }
+}
+
+fn select(options: Vec<&str>, question: &str) -> String {
+    let choice: Result<&str, InquireError> = Select::new(question, options).prompt();
+
+    match choice {
+        Ok(choice) => choice.to_string(),
+        Err(_) => println!("There was an error, please try again"),
+    }
+}
+
+fn password(question: &str) -> String {
+    let response = Password::new(question).prompt();
+
+    match response {
+        Ok(response) => response.to_string(),
+        Err(_) => println!("An error happened, try again later or submit a bug report"),
+    }
+}
+
+fn confirm(question: &str) -> bool {
+    let response = Confirm::new(question).with_default(true).prompt();
+
+    match response {
+        Ok(response) => response,
+        Err(_) => println!("An error happened, try again later or submit a bug report"),
     }
 }
 

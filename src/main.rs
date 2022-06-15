@@ -89,11 +89,6 @@ pub fn make_data(
     let mut data = Map::new();
 
     data.insert("year".to_string(), to_json("2022"));
-    data.insert("project_name".to_string(), to_json("C.R.S."));
-    data.insert(
-        "description".to_string(),
-        to_json("Project generator with rust"),
-    );
 
     let mut crs_data = Map::new();
     crs_data.insert("engine".to_string(), to_json(TYPES));

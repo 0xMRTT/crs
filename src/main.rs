@@ -119,7 +119,7 @@ fn generate_file(
     handlebars: &mut handlebars::Handlebars,
     template: &str,
     output_file: &str,
-    data: Map<String, Json>,
+    data: &Map<String, Json>,
 ) -> Result<(), Box<dyn Error>> {
     handlebars
         .register_template_file("template", template)
@@ -132,7 +132,7 @@ fn generate_file(
     Ok(())
 }
 
-fn clone_repo(url: String, to: std::path::PathBuf) -> Result<git2::Repository, Box<dyn Error>> {
+fn clone_repo(url: String, to: &std::path::PathBuf) -> Result<git2::Repository, Box<dyn Error>> {
     let final_path = to;
     let _repo = match Repository::clone(&url, final_path) {
         Ok(repo) => return Ok(repo),
@@ -179,19 +179,43 @@ fn list_installed() {
     println!("{} templates installed", number);
 }
 
-fn generate_name(handlebars: &mut handlebars::Handlebars, original_name: String, data: Map<String, Json>) -> String{
+fn generate_name(
+    handlebars: &mut handlebars::Handlebars,
+    original_name: &String,
+    data: &Map<String, Json>,
+) -> String {
     // Generate the name of the template
-    // 
+    //
     // Example:
     //   println!("{}", generate_name(&mut handlebars, "{{d.project_name}}.md".to_string(), data));
 
-    return handlebars.render_template(original_name.as_str(), &data).unwrap();
+    return handlebars
+        .render_template(original_name.as_str(), &data)
+        .unwrap();
 }
 
-fn generate_folder(handlebars: &mut handlebars::Handlebars,) {
+fn generate_folder(
+    handlebars: &mut handlebars::Handlebars,
+    folder_path: String,
+    to: String,
+    data: &Map<String, Json>,
+) {
     // WIP
     // Create new folder using generate_name
     // Use recursive call to generate_file
+
+    let paths = fs::read_dir(folder_path.as_str()).unwrap();
+    let folder_content = paths.map(|path| path.unwrap().path());
+    fs::create_dir_all(generate_name(handlebars, &to, data).as_str()).expect("Failed to create directory. Maybe the directory already exist ?");
+    for path in folder_content {
+        if path.is_dir() {
+            generate_folder(handlebars, path.to_str().unwrap().to_string(), to.clone(), data);
+        } else {
+            let new_name = generate_name(handlebars, &to, data);
+            generate_file(handlebars, path.display().to_string().as_str(), new_name.as_str(), data).unwrap();
+        }
+    }
+
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -236,7 +260,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         println!("Clone {} to {:#?}", template_url, clone_to);
 
-        clone_repo(template_url, clone_to).expect("");
+        clone_repo(template_url, &clone_to).expect("");
 
         println!("Successfuly downloaded template.");
 
@@ -253,7 +277,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         println!("Using data from {:#?}", json_data_file.display());
-        
         // START : Create global handelbars
         let mut handlebars = Handlebars::new();
 
@@ -269,10 +292,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             "README.md",
             data,
         )?;*/
-        println!("{}", generate_name(&mut handlebars, "{{d.project_name}}.md".to_string(), data));
-        
-    }
-    else {
+        generate_folder(&mut handlebars, clone_to.display().to_string(), "generated".to_string(), &data);
+    } else {
         println!("https://github.com/0xMRTT/basic-template");
     }
     Ok(())

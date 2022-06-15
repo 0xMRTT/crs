@@ -276,8 +276,35 @@ fn confirm(question: &str) -> bool {
     }
 }
 
+fn ask_user(template_json_path:String) {
+    let json_data = {
+        // Load the first file into a string.
+        let text = std::fs::read_to_string(template_json_path).unwrap();
+
+        // Parse the string into a dynamically-typed JSON structure.
+        serde_json::from_str::<Value>(&text).unwrap()
+    };
+    let mut data = Map::new();
+
+    for (key, value) in json_data.as_object().unwrap().iter() {
+        println!("{}: {}", key, value);
+        for (key_, value_) in value.as_object().unwrap().iter() {
+            println!("{}: {}", key_, value_);
+            if key_ == "type" {
+                match key_.as_str() {
+                    "string" => {
+                        let response = ask_text("Enter a string");
+                        data.insert(key.to_string(), Json::String(response));
+                    }
+                }
+            }
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
+
+    ask_user("/home/user/Projects/rust-template/crs.json".to_string());
     
     
     let cli = Cli::parse();

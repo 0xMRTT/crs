@@ -307,7 +307,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             "README.md",
             data,
         )?;*/
-        generate_folder(&mut handlebars, &clone_to.display().to_string(), &"generated".to_string(), &data);
+        let folder_path = clone_to.display().to_string() + "/template";
+        generate_folder(&mut handlebars, &folder_path, &"generated".to_string(), &data);
     } else {
         println!("https://github.com/0xMRTT/basic-template");
     }

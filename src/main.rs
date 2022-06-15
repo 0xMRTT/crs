@@ -248,6 +248,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Start generating new project...");
 
+        println!("WIP");
+
         /*
         // START : Create global handelbars
         let mut handlebars = Handlebars::new();

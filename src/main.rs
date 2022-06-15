@@ -241,7 +241,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
     
     let mut to:String = "generated".to_string();
-    
+
     if cli.to.is_some() {
         to = cli.to.unwrap();
     }
@@ -272,6 +272,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut clone_to = app_dirs.data_dir;
         clone_to.push(template_name.unwrap());
 
+        let current_dir = std::env::current_dir()?;
+
         println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
         if clone_to.exists() {
             println!("Template already downloaded. Updating...");
@@ -280,6 +282,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let path_to_delete = Path::new(&to_delete);
             println!("Deleting old template ({})", &to_delete);
             fs::remove_dir_all(path_to_delete)?;
+            env::set_current_dir(current_dir)?; // Come back to the current directory
         }
         println!("Clone {} to {:#?}", template_url, clone_to);
 

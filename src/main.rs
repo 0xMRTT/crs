@@ -290,7 +290,12 @@ fn ask_user(template_json_path: String) {
             let result: Result<&str, InquireError> = Select::new(question.as_str(), options).prompt();
             data.insert(key.to_string(), Json::String(result.unwrap().to_string()));
         } else if value["type"] == "multiselect" {
-            println!("Multi Select")
+            let choices = value["options"].as_array().unwrap().to_vec();
+            let options = choices.iter().map(|choice| {
+                choice.as_str().unwrap()
+            }).collect();
+            let result = MultiSelect::new(question.as_str(), options).prompt();
+            data.insert(key.to_string(), to_json(result.unwrap()));
         } else if value["type"] == "boolean" {
             println!("Boolean")
         } else if value["type"] == "number" {

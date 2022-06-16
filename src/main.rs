@@ -253,9 +253,7 @@ fn ask_user(template_json_path: String) {
     for (key, value) in json_data.as_object().unwrap().iter() {
         println!("{}: {}", key, value);
 
-        if value["type"] == "string" {
-            println!("String")
-        } else if value["type"] == "select" {
+        if value["type"] == "select" {
             println!("Select")
         } else if value["type"] == "multiselect" {
             println!("Multi Select")
@@ -263,8 +261,8 @@ fn ask_user(template_json_path: String) {
             println!("Boolean")
         } else if value["type"] == "number" {
             println!("Number")
-        } else {
-            println!("Unknown")
+        } else { // by default, it's string even if the type isn't specified
+            println!("String")
         }
     }
 }

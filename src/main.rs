@@ -358,11 +358,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         let folder_path = clone_to.display().to_string() + "/template";
         
-        let mut json_data_file = String::new();
+        let mut _json_data_file = String::new();
         if cli.config.is_some() {        
-            json_data_file = cli.config.unwrap().display().to_string();
+            _json_data_file = cli.config.unwrap().display().to_string();
         } else {
-            json_data_file = clone_to.display().to_string() + "/crs.json";
+            _json_data_file = clone_to.display().to_string() + "/crs.json";
         }
 
         let data = make_data(
@@ -370,7 +370,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             "https://github.com/0xMRTT/basic-template".to_string(),
             "0xMRTT".to_string(),
             "0xMRTT".to_string(),
-            json_data_file,
+            _json_data_file,
         );
 
         let mut handlebars = Handlebars::new();

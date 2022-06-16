@@ -109,15 +109,8 @@ pub fn make_data(
 
     data.insert("crs".to_string(), to_json(crs_data));
 
-    let json_data = {
-        // Load the first file into a string.
-        let text = std::fs::read_to_string(json_data_path).unwrap();
 
-        // Parse the string into a dynamically-typed JSON structure.
-        serde_json::from_str::<Value>(&text).unwrap()
-    };
-
-    data.insert("d".to_string(), json_data);
+    data.insert("d".to_string(), to_json(ask_user(json_data_path)));
     data
 }
 
@@ -163,9 +156,6 @@ struct Cli {
 
     #[clap(short, long)]
     list_installed: bool,
-
-    #[clap(short, long, parse(from_os_str), value_name = "FILE")]
-    json_data_path: Option<PathBuf>,
 }
 
 fn list_installed() {
@@ -240,7 +230,7 @@ fn generate_folder(
     }
 }
 
-fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, handlebars::JsonValue>{
+fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, handlebars::JsonValue> {
     let json_data = {
         // Load the first file into a string.
         let text = std::fs::read_to_string(template_json_path).unwrap();
@@ -298,13 +288,12 @@ fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, 
         }
     }
 
-    return data;
+    return to_json(data).as_object().unwrap().clone();
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    ask_user("/home/user/Projects/rust-template/crs.json".to_string());
     let cli = Cli::parse();
 
     let mut to: String = "generated".to_string();
@@ -315,9 +304,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.list_installed {
         list_installed();
         exit(0);
-    } else if cli.template_url.is_some() && cli.json_data_path.is_some() {
+    } else if cli.template_url.is_some() && cli.config.is_some() {
         let template_url = cli.template_url.unwrap();
-        let json_data_file = cli.json_data_path.unwrap();
+        let json_data_file = cli.config.unwrap();
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();

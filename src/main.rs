@@ -200,7 +200,7 @@ fn generate_folder(
         let file_name = path.file_name().unwrap().to_str().unwrap();
         
         let mut new: String = to.clone();
-        new.push_str("/");
+        new.push('/');
         new.push_str(file_name);
         new = generate_name(handlebars, &new, data);
         if path.is_dir() {

@@ -252,8 +252,19 @@ fn ask_user(template_json_path: String) {
 
     for (key, value) in json_data.as_object().unwrap().iter() {
         println!("{}: {}", key, value);
-        for (key_, value_) in value.as_object().unwrap().iter() {
-            println!("{}: {}", key_, value_);
+
+        if value["type"] == "string" {
+            println!("String")
+        } else if value["type"] == "select" {
+            println!("Select")
+        } else if value["type"] == "multiselect" {
+            println!("Multi Select")
+        } else if value["type"] == "boolean" {
+            println!("Boolean")
+        } else if value["type"] == "number" {
+            println!("Number")
+        } else {
+            println!("Unknown")
         }
     }
 }

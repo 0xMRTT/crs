@@ -240,41 +240,6 @@ fn generate_folder(
     }
 }
 
-fn ask_text(question: &str) -> String {
-    let response = Text::new(question).prompt();
-
-    match response {
-        Ok(response) => response.to_string(),
-        Err(_) => println!("An error happened, try again later or submit a bug report"),
-    }
-}
-
-fn select(options: Vec<&str>, question: &str) -> String {
-    let choice: Result<&str, InquireError> = Select::new(question, options).prompt();
-
-    match choice {
-        Ok(choice) => choice.to_string(),
-        Err(_) => println!("There was an error, please try again"),
-    }
-}
-
-fn password(question: &str) -> String {
-    let response = Password::new(question).prompt();
-
-    match response {
-        Ok(response) => response.to_string(),
-        Err(_) => println!("An error happened, try again later or submit a bug report"),
-    }
-}
-
-fn confirm(question: &str) -> bool {
-    let response = Confirm::new(question).with_default(true).prompt();
-
-    match response {
-        Ok(response) => response,
-        Err(_) => println!("An error happened, try again later or submit a bug report"),
-    }
-}
 
 fn ask_user(template_json_path:String) {
     let json_data = {
@@ -290,14 +255,6 @@ fn ask_user(template_json_path:String) {
         println!("{}: {}", key, value);
         for (key_, value_) in value.as_object().unwrap().iter() {
             println!("{}: {}", key_, value_);
-            if key_ == "type" {
-                match key_.as_str() {
-                    "string" => {
-                        let response = ask_text("Enter a string");
-                        data.insert(key.to_string(), Json::String(response));
-                    }
-                }
-            }
     }
 }
 

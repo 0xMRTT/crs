@@ -270,11 +270,18 @@ fn ask_user(template_json_path: String) {
         if placeholder_value != None { // use default value provided by the creator of the template in 'crs.json'
         placeholder = placeholder_value.unwrap().as_str().unwrap();
         }
+
+        let question_value = value.get("question");
+        let mut question = format!("{} ?",key).as_str() ; // "" is the default value
+        if question_value != None { // use default value provided by the creator of the template in 'crs.json'
+        question = question_value.unwrap().as_str().unwrap();
+        }
     
 
         println!("Default user input: {}", default);
         println!("Description: {}", description);
         println!("Placeholder: {}", placeholder);
+        println!("Question: {}", question);
         if value["type"] == "select" {
             println!("Select")
         } else if value["type"] == "multiselect" {

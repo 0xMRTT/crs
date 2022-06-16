@@ -370,7 +370,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         handlebars.register_helper("ranking_label", Box::new(rank_helper));
 
         let folder_path = clone_to.display().to_string() + "/template";
-        if to != "generated".to_string() {
+        if to != "generated" {
             to = generate_name(&mut handlebars, &to, &data);
         }
         println!("Generating project to {} from {}", to, folder_path);

@@ -272,7 +272,7 @@ fn ask_user(template_json_path: String) {
         }
 
         let question_value = value.get("question");
-        let mut question = format!("{} ?",key) ; // "" is the default value
+        let mut question = format!("What is {} ?",key) ; // Default question
         if question_value != None { // use default value provided by the creator of the template in 'crs.json'
         question = question_value.unwrap().as_str().unwrap().to_string();
         }

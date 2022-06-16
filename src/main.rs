@@ -7,7 +7,7 @@ extern crate serde_derive;
 extern crate serde_json;
 use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
-use serde_json::{Number, Value, json};
+use serde_json::{json, Number, Value};
 
 use git2::Repository;
 use handlebars::{
@@ -108,7 +108,6 @@ pub fn make_data(
     crs_data.insert("template".to_string(), to_json(template_data));
 
     data.insert("crs".to_string(), to_json(crs_data));
-
 
     data.insert("d".to_string(), to_json(ask_user(json_data_path)));
     data
@@ -230,7 +229,9 @@ fn generate_folder(
     }
 }
 
-fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, handlebars::JsonValue> {
+fn ask_user(
+    template_json_path: String,
+) -> serde_json::Map<std::string::String, handlebars::JsonValue> {
     let json_data = {
         // Load the first file into a string.
         let text = std::fs::read_to_string(template_json_path).unwrap();
@@ -243,47 +244,65 @@ fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, 
     for (key, value) in json_data.as_object().unwrap().iter() {
         let default_value = value.get("default");
         let mut default = ""; // "" is the default value
-        if default_value != None { // use default value provided by the creator of the template in 'crs.json'
+        if default_value != None {
+            // use default value provided by the creator of the template in 'crs.json'
             default = default_value.unwrap().as_str().unwrap();
         }
 
         let description_value = value.get("description");
         let mut description = ""; // "" is the default value
-        if description_value != None { // use default value provided by the creator of the template in 'crs.json'
-        description = description_value.unwrap().as_str().unwrap();
+        if description_value != None {
+            // use default value provided by the creator of the template in 'crs.json'
+            description = description_value.unwrap().as_str().unwrap();
         }
 
         let placeholder_value = value.get("placeholder");
         let mut placeholder = ""; // "" is the default value
-        if placeholder_value != None { // use default value provided by the creator of the template in 'crs.json'
-        placeholder = placeholder_value.unwrap().as_str().unwrap();
+        if placeholder_value != None {
+            // use default value provided by the creator of the template in 'crs.json'
+            placeholder = placeholder_value.unwrap().as_str().unwrap();
         }
 
         let question_value = value.get("question");
-        let mut question = format!("What is {} ?",key) ; // Default question
-        if question_value != None { // use default value provided by the creator of the template in 'crs.json'
-        question = question_value.unwrap().as_str().unwrap().to_string();
+        let mut question = format!("What is {} ?", key); // Default question
+        if question_value != None {
+            // use default value provided by the creator of the template in 'crs.json'
+            question = question_value.unwrap().as_str().unwrap().to_string();
         }
 
         if value["type"] == "select" {
             let choices = value["options"].as_array().unwrap().to_vec();
-            let options = choices.iter().map(|choice| {
-                choice.as_str().unwrap()
-            }).collect();
-            let result: Result<&str, InquireError> = Select::new(question.as_str(), options).with_help_message(description).prompt();
+            let options = choices
+                .iter()
+                .map(|choice| choice.as_str().unwrap())
+                .collect();
+            let result: Result<&str, InquireError> = Select::new(question.as_str(), options)
+                .with_help_message(description)
+                .prompt();
             data.insert(key.to_string(), Json::String(result.unwrap().to_string()));
         } else if value["type"] == "multiselect" {
             let choices = value["options"].as_array().unwrap().to_vec();
-            let options = choices.iter().map(|choice| {
-                choice.as_str().unwrap()
-            }).collect();
-            let result = MultiSelect::new(question.as_str(), options).with_help_message(description).prompt();
+            let options = choices
+                .iter()
+                .map(|choice| choice.as_str().unwrap())
+                .collect();
+            let result = MultiSelect::new(question.as_str(), options)
+                .with_help_message(description)
+                .prompt();
             data.insert(key.to_string(), to_json(result.unwrap()));
         } else if value["type"] == "boolean" {
-            let result = Confirm::new(question.as_str()).with_help_message(description).with_default(default.parse::<bool>().unwrap()).prompt();
+            let result = Confirm::new(question.as_str())
+                .with_help_message(description)
+                .with_default(default.parse::<bool>().unwrap())
+                .prompt();
             data.insert(key.to_string(), to_json(result.unwrap()));
-        } else { // by default, it's string even if the type isn't specified
-            let result = Text::new(question.as_str()).with_placeholder(placeholder).with_default(default).with_help_message(description).prompt();
+        } else {
+            // by default, it's string even if the type isn't specified
+            let result = Text::new(question.as_str())
+                .with_placeholder(placeholder)
+                .with_default(default)
+                .with_help_message(description)
+                .prompt();
             data.insert(key.to_string(), Json::String(result.unwrap()));
         }
     }

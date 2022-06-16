@@ -121,10 +121,8 @@ fn generate_file(
 ) -> Result<(), Box<dyn Error>> {
     handlebars.register_template_string(template, fs::read_to_string(template)?)?;
     //handlebars.register_template_file(template, template).expect("Failed to register template");
-    let output_file_path = output_file;
     let mut output_file = File::create(output_file)?;
     handlebars.render_to_write(template, &data, &mut output_file)?;
-    println!(" |--> {} generated", output_file_path);
     Ok(())
 }
 
@@ -201,21 +199,16 @@ fn generate_folder(
     let folder_content = paths.map(|path| path.unwrap().path());
     for path in folder_content {
         let file_name = path.file_name().unwrap().to_str().unwrap();
-        println!(" - {}", file_name);
-        println!(" |- {}", path.display());
-
+        
         let mut new: String = to.clone();
         new.push_str("/");
         new.push_str(file_name);
         new = generate_name(handlebars, &new, data);
-        println!(" |--> {}", new);
         if path.is_dir() {
             if path.display().to_string().contains(".git") {
-                println!(" |--> Skipping");
                 continue;
             }
             let new_folder_path = folder_path.clone() + "/" + file_name;
-            println!(" |---> {}", new_folder_path);
             generate_folder(handlebars, &new_folder_path, &new, data);
         } else {
             generate_file(

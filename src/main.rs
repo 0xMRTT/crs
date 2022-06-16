@@ -240,7 +240,7 @@ fn generate_folder(
     }
 }
 
-fn ask_user(template_json_path: String) {
+fn ask_user(template_json_path: String) -> serde_json::Map<std::string::String, handlebars::JsonValue>{
     let json_data = {
         // Load the first file into a string.
         let text = std::fs::read_to_string(template_json_path).unwrap();
@@ -251,8 +251,6 @@ fn ask_user(template_json_path: String) {
     let mut data = Map::new();
 
     for (key, value) in json_data.as_object().unwrap().iter() {
-        println!("{}: {}", key, value);
-
         let default_value = value.get("default");
         let mut default = ""; // "" is the default value
         if default_value != None { // use default value provided by the creator of the template in 'crs.json'
@@ -276,12 +274,7 @@ fn ask_user(template_json_path: String) {
         if question_value != None { // use default value provided by the creator of the template in 'crs.json'
         question = question_value.unwrap().as_str().unwrap().to_string();
         }
-    
 
-        println!("Default user input: {}", default);
-        println!("Description: {}", description);
-        println!("Placeholder: {}", placeholder);
-        println!("Question: {}", question);
         if value["type"] == "select" {
             let choices = value["options"].as_array().unwrap().to_vec();
             let options = choices.iter().map(|choice| {
@@ -303,9 +296,9 @@ fn ask_user(template_json_path: String) {
             let result = Text::new(question.as_str()).with_placeholder(placeholder).with_default(default).with_help_message(description).prompt();
             data.insert(key.to_string(), Json::String(result.unwrap()));
         }
-
-        println!("{:#?}", data);
     }
+
+    return data;
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

@@ -297,7 +297,8 @@ fn ask_user(template_json_path: String) {
             let result = MultiSelect::new(question.as_str(), options).with_help_message(description).prompt();
             data.insert(key.to_string(), to_json(result.unwrap()));
         } else if value["type"] == "boolean" {
-            println!("Boolean")
+            let result = Confirm::new(question.as_str()).with_help_message(description).with_default(default.parse::<bool>().unwrap()).prompt();
+            data.insert(key.to_string(), to_json(result.unwrap()));
         } else if value["type"] == "number" {
             println!("Number")
         } else { // by default, it's string even if the type isn't specified

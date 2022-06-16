@@ -315,9 +315,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.list_installed {
         list_installed();
         exit(0);
-    } else if cli.template_url.is_some() && cli.config.is_some() {
+    } else if cli.template_url.is_some() {
         let template_url = cli.template_url.unwrap();
-        let json_data_file = cli.config.unwrap();
+        
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
@@ -356,12 +356,21 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Successfuly downloaded template.");
 
+        let folder_path = clone_to.display().to_string() + "/template";
+        
+        let mut json_data_file = String::new();
+        if cli.config.is_some() {        
+            json_data_file = cli.config.unwrap().display().to_string();
+        } else {
+            json_data_file = clone_to.display().to_string() + "/crs.json";
+        }
+
         let data = make_data(
             "basic".to_string(),
             "https://github.com/0xMRTT/basic-template".to_string(),
             "0xMRTT".to_string(),
             "0xMRTT".to_string(),
-            json_data_file.display().to_string(),
+            json_data_file,
         );
 
         let mut handlebars = Handlebars::new();
@@ -369,7 +378,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         handlebars.register_helper("format", Box::new(format_helper));
         handlebars.register_helper("ranking_label", Box::new(rank_helper));
 
-        let folder_path = clone_to.display().to_string() + "/template";
         if to != "generated" {
             to = generate_name(&mut handlebars, &to, &data);
         }

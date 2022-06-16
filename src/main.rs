@@ -7,7 +7,7 @@ extern crate serde_derive;
 extern crate serde_json;
 use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
-use serde_json::{Number, Value};
+use serde_json::{Number, Value, json};
 
 use git2::Repository;
 use handlebars::{
@@ -253,6 +253,28 @@ fn ask_user(template_json_path: String) {
     for (key, value) in json_data.as_object().unwrap().iter() {
         println!("{}: {}", key, value);
 
+        let default_value = value.get("default");
+        let mut default = ""; // "" is the default value
+        if default_value != None { // use default value provided by the creator of the template in 'crs.json'
+            default = default_value.unwrap().as_str().unwrap();
+        }
+
+        let description_value = value.get("description");
+        let mut description = ""; // "" is the default value
+        if description_value != None { // use default value provided by the creator of the template in 'crs.json'
+        description = description_value.unwrap().as_str().unwrap();
+        }
+
+        let placeholder_value = value.get("placeholder");
+        let mut placeholder = ""; // "" is the default value
+        if placeholder_value != None { // use default value provided by the creator of the template in 'crs.json'
+        placeholder = placeholder_value.unwrap().as_str().unwrap();
+        }
+    
+
+        println!("Default user input: {}", default);
+        println!("Description: {}", description);
+        println!("Placeholder: {}", placeholder);
         if value["type"] == "select" {
             println!("Select")
         } else if value["type"] == "multiselect" {

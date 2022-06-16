@@ -375,6 +375,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         println!("Generating project to {} from {}", to, folder_path);
         generate_folder(&mut handlebars, &folder_path, &to, &data);
+        println!("Project generated. Happy coding!");
     } else {
         println!("https://github.com/0xMRTT/basic-template");
     }

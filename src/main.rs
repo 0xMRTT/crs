@@ -191,7 +191,6 @@ fn generate_folder(
     to: &String,
     data: &Map<String, Json>,
 ) {
-    println!("Generating project to {} from {}", to, folder_path);
 
     fs::create_dir_all(&to.clone()).unwrap();
 
@@ -341,7 +340,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         let current_dir = std::env::current_dir()?;
 
-        println!("Thanks to {} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
+        println!("Thanks to @{} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
         if clone_to.exists() {
             println!("Template already downloaded. Updating...");
             env::set_current_dir(template_store_path)?;
@@ -357,10 +356,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Successfuly downloaded template.");
 
-        println!("Start generating new project...");
-
-        println!("WIP");
-
         let data = make_data(
             "basic".to_string(),
             "https://github.com/0xMRTT/basic-template".to_string(),
@@ -369,26 +364,16 @@ fn main() -> Result<(), Box<dyn Error>> {
             json_data_file.display().to_string(),
         );
 
-        println!("Using data from {:#?}", json_data_file.display());
-        // START : Create global handelbars
         let mut handlebars = Handlebars::new();
 
         handlebars.register_helper("format", Box::new(format_helper));
         handlebars.register_helper("ranking_label", Box::new(rank_helper));
-        // handlebars.register_helper("format", Box::new(FORMAT_HELPER));
 
-        // END: Create global handelbars
-
-        /*generate_file(
-            &mut handlebars,
-            "~/Projects/crs/src/template.hbs",
-            "README.md",
-            data,
-        )?;*/
         let folder_path = clone_to.display().to_string() + "/template";
         if to != "generated".to_string() {
             to = generate_name(&mut handlebars, &to, &data);
         }
+        println!("Generating project to {} from {}", to, folder_path);
         generate_folder(&mut handlebars, &folder_path, &to, &data);
     } else {
         println!("https://github.com/0xMRTT/basic-template");

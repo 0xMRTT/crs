@@ -26,12 +26,12 @@ use std::path::PathBuf;
 
 use url::{ParseError, Url};
 
+use chrono::Datelike;
+use inquire::error::InquireError;
+use inquire::*;
 use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
-use chrono::Datelike;
-use inquire::*;
-use inquire::error::InquireError;
 
 // define a custom helper
 fn format_helper(
@@ -240,8 +240,7 @@ fn generate_folder(
     }
 }
 
-
-fn ask_user(template_json_path:String) {
+fn ask_user(template_json_path: String) {
     let json_data = {
         // Load the first file into a string.
         let text = std::fs::read_to_string(template_json_path).unwrap();
@@ -255,6 +254,7 @@ fn ask_user(template_json_path:String) {
         println!("{}: {}", key, value);
         for (key_, value_) in value.as_object().unwrap().iter() {
             println!("{}: {}", key_, value_);
+        }
     }
 }
 
@@ -262,12 +262,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     ask_user("/home/user/Projects/rust-template/crs.json".to_string());
-    
-    
     let cli = Cli::parse();
-    
-    let mut to:String = "generated".to_string();
 
+    let mut to: String = "generated".to_string();
     if cli.to.is_some() {
         to = cli.to.unwrap();
     }
@@ -345,16 +342,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             data,
         )?;*/
         let folder_path = clone_to.display().to_string() + "/template";
-        
         if to != "generated".to_string() {
             to = generate_name(&mut handlebars, &to, &data);
         }
-        generate_folder(
-            &mut handlebars,
-            &folder_path,
-            &to,
-            &data,
-        );
+        generate_folder(&mut handlebars, &folder_path, &to, &data);
     } else {
         println!("https://github.com/0xMRTT/basic-template");
     }

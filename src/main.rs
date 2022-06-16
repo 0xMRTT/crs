@@ -294,6 +294,8 @@ fn ask_user(template_json_path: String) {
             let result = Text::new(question.as_str()).with_placeholder(placeholder).with_default(default).with_help_message(description).prompt();
             data.insert(key.to_string(), Json::String(result.unwrap()));
         }
+
+        println!("{:#?}", data);
     }
 }
 

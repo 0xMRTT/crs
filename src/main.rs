@@ -144,14 +144,12 @@ struct Cli {
     #[clap(short, long, parse(from_os_str), value_name = "FILE")]
     config: Option<PathBuf>,
 
-    /// Turn debugging information on
-    #[clap(short, long, parse(from_occurrences))]
-    debug: usize,
-
+    /// Where CRS will generate the new project
     #[clap(short, long)]
     to: Option<String>,
 
-    #[clap(short, long)]
+    /// List installed template
+    #[clap(short, long, value_name = "DIR")]
     list_installed: bool,
 }
 

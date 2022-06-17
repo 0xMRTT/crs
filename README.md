@@ -2,6 +2,7 @@
 
 [![Rust](https://github.com/0xMRTT/crs/actions/workflows/rust.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust.yml)
 [![rust-clippy analyze](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml)
+
 Create a new project from a template
 
 ## Installation

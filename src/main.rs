@@ -293,7 +293,7 @@ fn ask_user(
             // use default value provided by the creator of the template in 'crs.json'
             _validators_list = validators.unwrap().as_array().unwrap().to_vec();
             for validator in _validators_list.iter() {
-                validators_list.push(validator.as_str().unwrap().to_string());
+                validators_list.push(validator.as_str().unwrap());
             }
         }
 
@@ -304,72 +304,77 @@ fn ask_user(
             error_message = error_message_value.unwrap().as_str().unwrap().to_string();
         }
 
-        if value["type"] == "select" {
-            let choices = value["options"].as_array().unwrap().to_vec();
-            let options = choices
-                .iter()
-                .map(|choice| choice.as_str().unwrap())
-                .collect();
-            let result: Result<&str, InquireError> = Select::new(question.as_str(), options)
-                .with_help_message(description)
-                .prompt();
+        let mut is_value_correct = false;
 
-            let r = result.unwrap();
-            for validator in validators_list {
-                if validate(validator.as_str(), &r) != true {
-                    println!("{} is not valid. {}", &r, error_message);
-                    let t = String::from(&template_json_path);
-                    ask_user(t);
-                }
-            }
-            data.insert(key.to_string(), Json::String(r.to_string()));
+        while is_value_correct != true {
+            if value["type"] == "select" {
+                let choices = value["options"].as_array().unwrap().to_vec();
+                let options = choices
+                    .iter()
+                    .map(|choice| choice.as_str().unwrap())
+                    .collect();
+                let result: Result<&str, InquireError> = Select::new(question.as_str(), options)
+                    .with_help_message(description)
+                    .prompt();
 
-        } else if value["type"] == "multiselect" {
-            let choices = value["options"].as_array().unwrap().to_vec();
-            let options = choices
-                .iter()
-                .map(|choice| choice.as_str().unwrap())
-                .collect();
-            let result = MultiSelect::new(question.as_str(), options)
-                .with_help_message(description)
-                .prompt();
-            
-            let r = result.unwrap();
-            for validator in validators_list {
-                for r_ in r.iter() {
-                    if validate(validator.as_str(), &r_) != true {
-                        println!("{} is not valid. {}", &r_, error_message);
+                let r = result.unwrap();
+                for validator in &validators_list {
+                    if validate(validator, &r) != true {
+                        println!("{} is not valid. {}", &r, error_message);
                         let t = String::from(&template_json_path);
                         ask_user(t);
                     }
                 }
-            }
-            data.insert(key.to_string(), to_json(r));
+                data.insert(key.to_string(), Json::String(r.to_string()));
 
-        } else if value["type"] == "boolean" {
-            let result = Confirm::new(question.as_str())
-                .with_help_message(description)
-                .with_default(default.parse::<bool>().unwrap())
-                .prompt();
-            data.insert(key.to_string(), to_json(result.unwrap()));
-
-        } else {
-            // by default, it's string even if the type isn't specified
-            let result = Text::new(question.as_str())
-                .with_placeholder(placeholder)
-                .with_default(default)
-                .with_help_message(description)
-                .prompt();
-
-            let r = result.unwrap();
-            for validator in validators_list {
-                if validate(validator.as_str(), &r.as_str()) != true {
-                    println!("{} is not valid. {}", &r.as_str(), error_message);
-                    let t = String::from(&template_json_path);
-                    ask_user(t);
+            } else if value["type"] == "multiselect" {
+                let choices = value["options"].as_array().unwrap().to_vec();
+                let options = choices
+                    .iter()
+                    .map(|choice| choice.as_str().unwrap())
+                    .collect();
+                let result = MultiSelect::new(question.as_str(), options)
+                    .with_help_message(description)
+                    .prompt();
+                
+                let r = result.unwrap();
+                for validator in &validators_list {
+                    for r_ in r.iter() {
+                        if validate(validator, &r_) != true {
+                            println!("{} is not valid. {}", &r_, error_message);
+                            let t = String::from(&template_json_path);
+                            ask_user(t);
+                        }
+                    }
                 }
+                data.insert(key.to_string(), to_json(r));
+
+            } else if value["type"] == "boolean" {
+                let result = Confirm::new(question.as_str())
+                    .with_help_message(description)
+                    .with_default(default.parse::<bool>().unwrap())
+                    .prompt();
+                data.insert(key.to_string(), to_json(result.unwrap()));
+
+            } else {
+                // by default, it's string even if the type isn't specified
+                let result = Text::new(question.as_str())
+                    .with_placeholder(placeholder)
+                    .with_default(default)
+                    .with_help_message(description)
+                    .prompt();
+
+                let r = result.unwrap();
+                for validator in &validators_list {
+                    if validate(&validator, &r.as_str()) != true {
+                        println!("{} is not valid. {}", &r.as_str(), error_message);
+                        let t = String::from(&template_json_path);
+                    } else {
+                        is_value_correct = true;
+                    }
+                }
+                data.insert(key.to_string(), Json::String(r));
             }
-            data.insert(key.to_string(), Json::String(r));
         }
     }
 

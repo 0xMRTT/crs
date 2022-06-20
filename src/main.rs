@@ -245,7 +245,7 @@ fn ask_user(
 ) -> serde_json::Map<std::string::String, handlebars::JsonValue> {
     let json_data = {
         // Load the first file into a string.
-        let text = std::fs::read_to_string(template_json_path).unwrap();
+        let text = std::fs::read_to_string(&template_json_path).unwrap();
 
         // Parse the string into a dynamically-typed JSON structure.
         serde_json::from_str::<Value>(&text).unwrap()
@@ -286,6 +286,24 @@ fn ask_user(
             question = question_value.unwrap().as_str().unwrap().to_string();
         }
 
+        let validators = value.get("validators");
+        let mut _validators_list = Vec::new(); 
+        let mut validators_list = Vec::new();
+        if validators != None {
+            // use default value provided by the creator of the template in 'crs.json'
+            _validators_list = validators.unwrap().as_array().unwrap().to_vec();
+            for validator in _validators_list.iter() {
+                validators_list.push(validator.as_str().unwrap().to_string());
+            }
+        }
+
+        let error_message_value = value.get("error-message");
+        let mut error_message = validators_list.join(", "); // Default error message
+        if error_message_value != None {
+            // use default value provided by the creator of the template in 'crs.json'
+            error_message = error_message_value.unwrap().as_str().unwrap().to_string();
+        }
+
         if value["type"] == "select" {
             let choices = value["options"].as_array().unwrap().to_vec();
             let options = choices
@@ -319,7 +337,15 @@ fn ask_user(
                 .with_default(default)
                 .with_help_message(description)
                 .prompt();
-            data.insert(key.to_string(), Json::String(result.unwrap()));
+            let r = result.unwrap();
+            for validator in validators_list {
+                if validate(validator.as_str(), &r.as_str()) != true {
+                    println!("{} is not valid. {}", &r.as_str(), error_message);
+                    let t = String::from(&template_json_path);
+                    ask_user(t);
+                }
+            }
+            data.insert(key.to_string(), Json::String(r));
         }
     }
 

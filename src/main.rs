@@ -451,7 +451,7 @@ fn run_post_hooks(clone_to:PathBuf) {
             .wait_with_output()
             .expect("failed to wait on child");
 
-        println!("{:?}", output.stdout.as_slice());
+        println!("Result of hook: {:?}", output.stdout.as_slice());
     }
 }
 fn main() -> Result<(), Box<dyn Error>> {

@@ -8,7 +8,6 @@ extern crate serde_json;
 use serde::Serialize;
 use serde_json::value::{self, Map, Value as Json};
 use serde_json::{json, Number, Value};
-
 use git2::Repository;
 use handlebars::{
     to_json, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
@@ -111,6 +110,24 @@ pub fn make_data(
 
     data.insert("d".to_string(), to_json(ask_user(json_data_path)));
     data
+}
+
+fn get_user_default() -> serde_json::Map<std::string::String, Value>{
+    let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
+    let user_defaults = app_dirs.config_dir.join("defaults.json");
+    let json_data = {
+        // Load the first file into a string.
+        let text = std::fs::read_to_string(user_defaults).unwrap();
+
+        // Parse the string into a dynamically-typed JSON structure.
+        serde_json::from_str::<Value>(&text).unwrap()
+    };
+    let mut data = Map::new();
+    for (key, value) in json_data.as_object().unwrap().iter() {
+        data.insert(key.to_string(), to_json(value.as_str().unwrap()));
+    }
+    return data;
+
 }
 
 fn generate_file(

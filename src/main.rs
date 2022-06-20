@@ -32,6 +32,7 @@ use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
 use regex::Regex;
+use std::process::Command;
 
 // define a custom helper
 fn format_helper(
@@ -379,7 +380,6 @@ fn ask_user(
                     for validator in &validators_list {
                         if validate(&validator, &r.as_str()) != true {
                             println!("{} is not valid. {}", &r.as_str(), error_message);
-                        let t = String::from(&template_json_path);
                         } else {
                             is_value_correct = true;
                         }
@@ -395,6 +395,48 @@ fn ask_user(
     return to_json(data).as_object().unwrap().clone();
 }
 
+fn run_hooks(clone_to:PathBuf) {
+    run_post_hooks(clone_to)
+}
+
+
+fn run_post_hooks(clone_to:PathBuf) {
+    println!("Running post hooks");
+    println!("clone_to: {}", clone_to.display());
+    let mut crs_template_json_path = clone_to.clone();
+    crs_template_json_path.push("CRSTemplate.json");
+    println!("{}", crs_template_json_path.to_str().unwrap());
+
+    let crs_template_json = {
+        // Load the first file into a string.
+        let text = std::fs::read_to_string(crs_template_json_path).unwrap();
+
+        // Parse the string into a dynamically-typed JSON structure.
+        serde_json::from_str::<Value>(&text).unwrap()
+    };
+
+    let hooks = crs_template_json["hooks"].as_object().unwrap();
+    let post_hooks = hooks["post"].as_object().unwrap();
+    for (key, value) in post_hooks.iter() {
+        println!("Running post hook {}", key);
+        let _command_vec = value.as_array().unwrap().to_vec();
+        let mut command_vec = Vec::from(_command_vec);
+
+        let command_str = command_vec[0].as_str().unwrap().to_string();
+        command_vec.remove(0);
+        let mut _args = command_vec.iter().map(|arg| arg.as_str().unwrap()).collect::<Vec<&str>>();
+
+        println!("command: {}", command_str);
+        println!("args: {:?}", _args);
+
+        let output =  Command::new(command_str)
+                    .args(_args)
+                    .output()
+                    .expect("failed to execute hook");
+
+        println!("{}", String::from_utf8_lossy(&output.stdout));
+    }
+}
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
@@ -508,6 +550,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Generating project to {} from {}", to, folder_path);
         generate_folder(&mut handlebars, &folder_path, &to, &data);
         println!("Project generated. Happy coding!");
+        env::set_current_dir(to)?;
+        println!("Run hooks...");
+        run_hooks(clone_to);
     } else {
         println!("No template url provided. Use --help for more information.");
     }

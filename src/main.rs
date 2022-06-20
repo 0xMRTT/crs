@@ -31,6 +31,7 @@ use inquire::*;
 use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
+use regex::Regex;
 
 // define a custom helper
 fn format_helper(
@@ -232,6 +233,11 @@ fn generate_folder(
             .unwrap();
         }
     }
+}
+
+fn validate(regexp: &str, value: &str) -> bool {
+    let re = Regex::new(regexp).unwrap();
+    re.is_match(value)
 }
 
 fn ask_user(

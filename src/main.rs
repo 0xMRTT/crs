@@ -313,7 +313,16 @@ fn ask_user(
             let result: Result<&str, InquireError> = Select::new(question.as_str(), options)
                 .with_help_message(description)
                 .prompt();
-            data.insert(key.to_string(), Json::String(result.unwrap().to_string()));
+
+            let r = result.unwrap();
+            for validator in validators_list {
+                if validate(validator.as_str(), &r) != true {
+                    println!("{} is not valid. {}", &r, error_message);
+                    let t = String::from(&template_json_path);
+                    ask_user(t);
+                }
+            }
+            data.insert(key.to_string(), Json::String(r.to_string()));
         } else if value["type"] == "multiselect" {
             let choices = value["options"].as_array().unwrap().to_vec();
             let options = choices
@@ -337,6 +346,7 @@ fn ask_user(
                 .with_default(default)
                 .with_help_message(description)
                 .prompt();
+
             let r = result.unwrap();
             for validator in validators_list {
                 if validate(validator.as_str(), &r.as_str()) != true {

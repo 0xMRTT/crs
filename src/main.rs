@@ -32,7 +32,7 @@ use platform_dirs::{AppDirs, UserDirs};
 use std::process::exit;
 use walkdir::WalkDir;
 use regex::Regex;
-use std::process::Command;
+use std::process::{Command, Stdio};
 use execute::Execute;
 
 // define a custom helper
@@ -430,12 +430,28 @@ fn run_post_hooks(clone_to:PathBuf) {
         println!("command: {}", command_str);
         println!("args: {:?}", _args);
 
-        let output =  Command::new(command_str)
-                    .args(_args)
-                    .output()
-                    .expect("failed to execute hook");
+        let mut child = Command::new(command_str)
+            .args(_args)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .expect("failed to execute child");
 
-        println!("{}", String::from_utf8_lossy(&output.stdout));
+        // If the child process fills its stdout buffer, it may end up
+        // waiting until the parent reads the stdout, and not be able to
+        // read stdin in the meantime, causing a deadlock.
+        // Writing from another thread ensures that stdout is being read
+        // at the same time, avoiding the problem.
+        let mut stdin = child.stdin.take().expect("failed to get stdin");
+        std::thread::spawn(move || {
+            stdin.write_all(b"test").expect("failed to write to stdin");
+        });
+
+        let output = child
+            .wait_with_output()
+            .expect("failed to wait on child");
+
+        println!("{:?}", output.stdout.as_slice());
     }
 }
 fn main() -> Result<(), Box<dyn Error>> {

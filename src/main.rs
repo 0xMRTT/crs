@@ -360,19 +360,50 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Thanks to @{} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
         if clone_to.exists() {
-            println!("Template already downloaded. Updating...");
             env::set_current_dir(template_store_path)?;
-            let to_delete = template_name.unwrap();
-            let path_to_delete = Path::new(&to_delete);
-            println!("Deleting old template ({})", &to_delete);
-            fs::remove_dir_all(path_to_delete)?;
+            let redownload = Confirm::new(
+                "Template already downloaded. Do you want to re-download the template ?",
+            )
+            .with_default(true)
+            .prompt();
+
+            match redownload {
+                Ok(true) => {
+                    let to_delete = template_name.unwrap();
+                    let path_to_delete = Path::new(&to_delete);
+                    println!("Deleting old template ({})", &to_delete);
+                    fs::remove_dir_all(path_to_delete)?;
+                    println!("Clone {} to {:#?}", template_url, clone_to);
+                    clone_repo(template_url, &clone_to).expect("");
+                    println!("Successfuly downloaded template.");
+                }
+                Ok(false) => {
+                    let sure = Confirm::new("Are you sure ?").with_default(false).prompt();
+
+                    match sure {
+                        Ok(true) => println!("Skip re-downloading of the template."),
+                        Ok(false) => {
+                            let to_delete = template_name.unwrap();
+                            let path_to_delete = Path::new(&to_delete);
+                            println!("Deleting old template ({})", &to_delete);
+                            fs::remove_dir_all(path_to_delete)?;
+                            println!("Clone {} to {:#?}", template_url, clone_to);
+                            clone_repo(template_url, &clone_to).expect("");
+                            println!("Successfuly downloaded template.");
+                        },
+                        Err(_) => println!("Error, try again later"),
+                    }
+                }
+                Err(_) => println!("Error, try again later"),
+            }
             env::set_current_dir(current_dir)?; // Come back to the current directory
+        } else {
+            println!("Clone {} to {:#?}", template_url, clone_to);
+
+            clone_repo(template_url, &clone_to).expect("");
+
+            println!("Successfuly downloaded template.");
         }
-        println!("Clone {} to {:#?}", template_url, clone_to);
-
-        clone_repo(template_url, &clone_to).expect("");
-
-        println!("Successfuly downloaded template.");
 
         let folder_path = clone_to.display().to_string() + "/template";
 

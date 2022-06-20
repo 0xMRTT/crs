@@ -323,6 +323,7 @@ fn ask_user(
                 }
             }
             data.insert(key.to_string(), Json::String(r.to_string()));
+
         } else if value["type"] == "multiselect" {
             let choices = value["options"].as_array().unwrap().to_vec();
             let options = choices
@@ -332,13 +333,26 @@ fn ask_user(
             let result = MultiSelect::new(question.as_str(), options)
                 .with_help_message(description)
                 .prompt();
-            data.insert(key.to_string(), to_json(result.unwrap()));
+            
+            let r = result.unwrap();
+            for validator in validators_list {
+                for r_ in r.iter() {
+                    if validate(validator.as_str(), &r_) != true {
+                        println!("{} is not valid. {}", &r_, error_message);
+                        let t = String::from(&template_json_path);
+                        ask_user(t);
+                    }
+                }
+            }
+            data.insert(key.to_string(), to_json(r));
+
         } else if value["type"] == "boolean" {
             let result = Confirm::new(question.as_str())
                 .with_help_message(description)
                 .with_default(default.parse::<bool>().unwrap())
                 .prompt();
             data.insert(key.to_string(), to_json(result.unwrap()));
+
         } else {
             // by default, it's string even if the type isn't specified
             let result = Text::new(question.as_str())

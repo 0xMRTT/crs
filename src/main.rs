@@ -328,6 +328,8 @@ fn ask_user(
                             is_value_correct = true;
                         }
                     }
+                } else {
+                    is_value_correct = true;
                 }
                 data.insert(key.to_string(), Json::String(r.to_string()));
 
@@ -352,6 +354,8 @@ fn ask_user(
                             }
                         }
                     }
+                } else {
+                    is_value_correct = true;
                 }
                 data.insert(key.to_string(), to_json(r));
 
@@ -380,6 +384,8 @@ fn ask_user(
                             is_value_correct = true;
                         }
                     }
+                } else {
+                    is_value_correct = true;
                 }
                 data.insert(key.to_string(), Json::String(r));
             }

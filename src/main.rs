@@ -289,12 +289,14 @@ fn ask_user(
         let validators = value.get("validators");
         let mut _validators_list = Vec::new(); 
         let mut validators_list = Vec::new();
+        let mut is_validators = false;
         if validators != None {
             // use default value provided by the creator of the template in 'crs.json'
             _validators_list = validators.unwrap().as_array().unwrap().to_vec();
             for validator in _validators_list.iter() {
                 validators_list.push(validator.as_str().unwrap());
             }
+            is_validators = true;
         }
 
         let error_message_value = value.get("error-message");
@@ -318,11 +320,13 @@ fn ask_user(
                     .prompt();
 
                 let r = result.unwrap();
-                for validator in &validators_list {
-                    if validate(validator, &r) != true {
-                        println!("{} is not valid. {}", &r, error_message);
-                    } else {
-                        is_value_correct = true;
+                if is_validators {
+                    for validator in &validators_list {
+                        if validate(validator, &r) != true {
+                            println!("{} is not valid. {}", &r, error_message);
+                        } else {
+                            is_value_correct = true;
+                        }
                     }
                 }
                 data.insert(key.to_string(), Json::String(r.to_string()));
@@ -338,12 +342,14 @@ fn ask_user(
                     .prompt();
                 
                 let r = result.unwrap();
-                for validator in &validators_list {
-                    for r_ in r.iter() {
-                        if validate(validator, &r_) != true {
-                            println!("{} is not valid. {}", &r_, error_message);
-                        } else {
-                            is_value_correct = true;
+                if is_validators {
+                    for validator in &validators_list {
+                        for r_ in r.iter() {
+                            if validate(validator, &r_) != true {
+                                println!("{} is not valid. {}", &r_, error_message);
+                            } else {
+                                is_value_correct = true;
+                            }
                         }
                     }
                 }
@@ -365,12 +371,14 @@ fn ask_user(
                     .prompt();
 
                 let r = result.unwrap();
-                for validator in &validators_list {
-                    if validate(&validator, &r.as_str()) != true {
-                        println!("{} is not valid. {}", &r.as_str(), error_message);
+                if is_validators {
+                    for validator in &validators_list {
+                        if validate(&validator, &r.as_str()) != true {
+                            println!("{} is not valid. {}", &r.as_str(), error_message);
                         let t = String::from(&template_json_path);
-                    } else {
-                        is_value_correct = true;
+                        } else {
+                            is_value_correct = true;
+                        }
                     }
                 }
                 data.insert(key.to_string(), Json::String(r));

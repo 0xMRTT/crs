@@ -245,6 +245,7 @@ fn ask_user(
         serde_json::from_str::<Value>(&text).unwrap()
     };
     let mut data = Map::new();
+    let defaults = get_user_default(); // Load the user defaults from ~/.config/crs/defaults.json
 
     for (key, value) in json_data.as_object().unwrap().iter() {
         let default_value = value.get("default");
@@ -252,6 +253,10 @@ fn ask_user(
         if default_value != None {
             // use default value provided by the creator of the template in 'crs.json'
             default = default_value.unwrap().as_str().unwrap();
+        }
+        if defaults.contains_key(key) {
+            // use default value provided by the user
+            default = defaults.get(key).unwrap().as_str().unwrap();
         }
 
         let description_value = value.get("description");

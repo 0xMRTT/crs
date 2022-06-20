@@ -5,13 +5,13 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
-use serde::Serialize;
-use serde_json::value::{self, Map, Value as Json};
-use serde_json::{json, Number, Value};
 use git2::Repository;
 use handlebars::{
     to_json, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
 };
+use serde::Serialize;
+use serde_json::value::{self, Map, Value as Json};
+use serde_json::{json, Number, Value};
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -112,7 +112,7 @@ pub fn make_data(
     data
 }
 
-fn get_user_default() -> serde_json::Map<std::string::String, Value>{
+fn get_user_default() -> serde_json::Map<std::string::String, Value> {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let user_defaults = app_dirs.config_dir.join("defaults.json");
     let json_data = {
@@ -127,7 +127,6 @@ fn get_user_default() -> serde_json::Map<std::string::String, Value>{
         data.insert(key.to_string(), to_json(value.as_str().unwrap()));
     }
     return data;
-
 }
 
 fn generate_file(
@@ -206,14 +205,13 @@ fn generate_folder(
     to: &String,
     data: &Map<String, Json>,
 ) {
-
     fs::create_dir_all(&to.clone()).unwrap();
 
     let paths = fs::read_dir(folder_path.as_str()).unwrap();
     let folder_content = paths.map(|path| path.unwrap().path());
     for path in folder_content {
         let file_name = path.file_name().unwrap().to_str().unwrap();
-        
+
         let mut new: String = to.clone();
         new.push('/');
         new.push_str(file_name);
@@ -332,7 +330,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         exit(0);
     } else if cli.template_url.is_some() {
         let template_url = cli.template_url.unwrap();
-        
+
         println!("Generating a new project using {}", template_url);
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
@@ -372,9 +370,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Successfuly downloaded template.");
 
         let folder_path = clone_to.display().to_string() + "/template";
-        
+
         let mut _json_data_file = String::new();
-        if cli.config.is_some() {        
+        if cli.config.is_some() {
             _json_data_file = cli.config.unwrap().display().to_string();
         } else {
             _json_data_file = clone_to.display().to_string() + "/crs.json";

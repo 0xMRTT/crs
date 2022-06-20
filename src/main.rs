@@ -33,6 +33,7 @@ use std::process::exit;
 use walkdir::WalkDir;
 use regex::Regex;
 use std::process::Command;
+use execute::Execute;
 
 // define a custom helper
 fn format_helper(

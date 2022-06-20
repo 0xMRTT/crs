@@ -321,8 +321,8 @@ fn ask_user(
                 for validator in &validators_list {
                     if validate(validator, &r) != true {
                         println!("{} is not valid. {}", &r, error_message);
-                        let t = String::from(&template_json_path);
-                        ask_user(t);
+                    } else {
+                        is_value_correct = true;
                     }
                 }
                 data.insert(key.to_string(), Json::String(r.to_string()));
@@ -342,8 +342,8 @@ fn ask_user(
                     for r_ in r.iter() {
                         if validate(validator, &r_) != true {
                             println!("{} is not valid. {}", &r_, error_message);
-                            let t = String::from(&template_json_path);
-                            ask_user(t);
+                        } else {
+                            is_value_correct = true;
                         }
                     }
                 }

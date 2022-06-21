@@ -77,3 +77,6 @@ And thanks to the creators and contributors of this awesome rust crates:
 * platform-dirs 
 * chrono
 * inquire
+* regex 
+* execute 
+* fs_extra 

@@ -404,7 +404,7 @@ fn run_hooks(clone_to: PathBuf) {
 fn run_post_hooks(clone_to: PathBuf) {
     println!("Running post hooks");
     println!("clone_to: {}", clone_to.display());
-    let mut crs_template_json_path = clone_to.clone();
+    let mut crs_template_json_path = clone_to;
     crs_template_json_path.push("CRSTemplate.json");
     println!("{}", crs_template_json_path.to_str().unwrap());
 

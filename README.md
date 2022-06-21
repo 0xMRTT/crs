@@ -34,6 +34,22 @@ And finally run crs
 
 ```
 $ crs https://github.com/0xMRTT/rust-template
+
+$ crs -h
+crs 0.1.0
+
+USAGE:
+    crs [OPTIONS] [TEMPLATE_URL]
+
+ARGS:
+    <TEMPLATE_URL>    Optional name to operate on
+
+OPTIONS:
+    -c, --config <FILE>           Sets a custom config file
+    -h, --help                    Print help information
+    -l, --list-installed <DIR>    List installed template
+    -t, --to <TO>                 Where CRS will generate the new project
+    -V, --version                 Print version information
 ```
 
 ## Thanks

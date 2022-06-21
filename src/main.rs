@@ -314,7 +314,7 @@ fn ask_user(
 
         let mut is_value_correct = false;
 
-        while is_value_correct != true {
+        while !is_value_correct {
             if value["type"] == "select" {
                 let choices = value["options"].as_array().unwrap().to_vec();
                 let options = choices

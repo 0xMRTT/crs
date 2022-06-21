@@ -421,7 +421,7 @@ fn run_post_hooks(clone_to: PathBuf) {
     for (key, value) in post_hooks.iter() {
         println!("Running post hook {}", key);
         let _command_vec = value.as_array().unwrap().to_vec();
-        let mut command_vec = Vec::from(_command_vec);
+        let mut command_vec = _command_vec;
 
         let command_str = command_vec[0].as_str().unwrap().to_string();
         command_vec.remove(0);

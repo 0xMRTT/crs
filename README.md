@@ -2,6 +2,9 @@
 
 [![Rust](https://github.com/0xMRTT/crs/actions/workflows/rust.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust.yml)
 [![rust-clippy analyze](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml)
+[![GitHub issues](https://img.shields.io/github/issues/0xMRTT/crs)](https://github.com/0xMRTT/crs/issues)
+[![GitHub license](https://img.shields.io/github/license/0xMRTT/crs)](https://github.com/0xMRTT/crs/blob/main/LICENSE)
+![Matrix](https://img.shields.io/matrix/crs:matrix.org)
 
 Create a new project from a template
 

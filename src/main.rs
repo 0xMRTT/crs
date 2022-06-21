@@ -35,6 +35,10 @@ use regex::Regex;
 use std::process::{Command, Stdio};
 use execute::Execute;
 
+extern crate fs_extra;
+use fs_extra::dir::copy;
+use fs_extra::dir::CopyOptions;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -539,13 +543,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Successfuly downloaded template.");
         }
 
-        let folder_path = clone_to.display().to_string() + "/template";
+        let mut temp_dir = env::temp_dir();
+
+        let options = CopyOptions::new();
+
+        temp_dir.push("crs");
+        
+        fs::create_dir_all(temp_dir.clone())?;
+        
+        
+        copy(clone_to.clone(), temp_dir.clone(), &options)?;
+        
+        temp_dir.push(template_name.unwrap());
+
+        println!("Copy template to {} (temp)", temp_dir.display());
+
+        let mut folder_path = temp_dir.clone().to_str().unwrap().to_string();
+        folder_path.push_str("/template");
+
 
         let mut _json_data_file = String::new();
         if cli.config.is_some() {
             _json_data_file = cli.config.unwrap().display().to_string();
         } else {
-            _json_data_file = clone_to.display().to_string() + "/crs.json";
+            _json_data_file = temp_dir.to_str().unwrap().to_string() + "/crs.json";
         }
 
         let data = make_data(
@@ -570,6 +591,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         env::set_current_dir(to)?;
         println!("Run hooks...");
         run_hooks(clone_to);
+        println!("Deleting temp dir");
+        fs::remove_dir_all(temp_dir.clone())?;
     } else {
         println!("No template url provided. Use --help for more information.");
     }

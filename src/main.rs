@@ -133,7 +133,7 @@ fn get_user_default() -> serde_json::Map<std::string::String, Value> {
     for (key, value) in json_data.as_object().unwrap().iter() {
         data.insert(key.to_string(), to_json(value.as_str().unwrap()));
     }
-    return data;
+    data
 }
 
 fn generate_file(

@@ -546,6 +546,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         temp_dir.push("crs");
 
+        let maybe_temp_dir: PathBuf = temp_dir.clone();
+        temp_dir.push(template_name.unwrap());
+
+        if maybe_temp_dir.exists() {
+            fs::remove_dir_all(maybe_temp_dir)?;
+        }
+
         fs::create_dir_all(temp_dir.clone())?;
 
         copy(clone_to.clone(), temp_dir.clone(), &options)?;

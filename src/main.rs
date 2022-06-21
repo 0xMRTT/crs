@@ -26,14 +26,14 @@ use std::path::PathBuf;
 use url::{ParseError, Url};
 
 use chrono::Datelike;
+use execute::Execute;
 use inquire::error::InquireError;
 use inquire::*;
 use platform_dirs::{AppDirs, UserDirs};
-use std::process::exit;
-use walkdir::WalkDir;
 use regex::Regex;
+use std::process::exit;
 use std::process::{Command, Stdio};
-use execute::Execute;
+use walkdir::WalkDir;
 
 extern crate fs_extra;
 use fs_extra::dir::copy;
@@ -293,7 +293,7 @@ fn ask_user(
         }
 
         let validators = value.get("validators");
-        let mut _validators_list = Vec::new(); 
+        let mut _validators_list = Vec::new();
         let mut validators_list = Vec::new();
         let mut is_validators = false;
         if validators != None {
@@ -338,7 +338,6 @@ fn ask_user(
                     is_value_correct = true;
                 }
                 data.insert(key.to_string(), Json::String(r.to_string()));
-
             } else if value["type"] == "multiselect" {
                 let choices = value["options"].as_array().unwrap().to_vec();
                 let options = choices
@@ -348,7 +347,7 @@ fn ask_user(
                 let result = MultiSelect::new(question.as_str(), options)
                     .with_help_message(description)
                     .prompt();
-                
+
                 let r = result.unwrap();
                 if is_validators {
                     for validator in &validators_list {
@@ -364,14 +363,12 @@ fn ask_user(
                     is_value_correct = true;
                 }
                 data.insert(key.to_string(), to_json(r));
-
             } else if value["type"] == "boolean" {
                 let result = Confirm::new(question.as_str())
                     .with_help_message(description)
                     .with_default(default.parse::<bool>().unwrap())
                     .prompt();
                 data.insert(key.to_string(), to_json(result.unwrap()));
-
             } else {
                 // by default, it's string even if the type isn't specified
                 let result = Text::new(question.as_str())
@@ -400,12 +397,11 @@ fn ask_user(
     return to_json(data).as_object().unwrap().clone();
 }
 
-fn run_hooks(clone_to:PathBuf) {
+fn run_hooks(clone_to: PathBuf) {
     run_post_hooks(clone_to)
 }
 
-
-fn run_post_hooks(clone_to:PathBuf) {
+fn run_post_hooks(clone_to: PathBuf) {
     println!("Running post hooks");
     println!("clone_to: {}", clone_to.display());
     let mut crs_template_json_path = clone_to.clone();
@@ -429,7 +425,10 @@ fn run_post_hooks(clone_to:PathBuf) {
 
         let command_str = command_vec[0].as_str().unwrap().to_string();
         command_vec.remove(0);
-        let mut _args = command_vec.iter().map(|arg| arg.as_str().unwrap()).collect::<Vec<&str>>();
+        let mut _args = command_vec
+            .iter()
+            .map(|arg| arg.as_str().unwrap())
+            .collect::<Vec<&str>>();
 
         println!("command: {}", command_str);
         println!("args: {:?}", _args);
@@ -451,9 +450,7 @@ fn run_post_hooks(clone_to:PathBuf) {
             stdin.write_all(b"test").expect("failed to write to stdin");
         });
 
-        let output = child
-            .wait_with_output()
-            .expect("failed to wait on child");
+        let output = child.wait_with_output().expect("failed to wait on child");
 
         println!("Result of hook: {:?}", output.stdout.as_slice());
     }
@@ -528,7 +525,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             println!("Clone {} to {:#?}", template_url, clone_to);
                             clone_repo(template_url, &clone_to).expect("");
                             println!("Successfuly downloaded template.");
-                        },
+                        }
                         Err(_) => println!("Error, try again later"),
                     }
                 }
@@ -548,19 +545,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         let options = CopyOptions::new();
 
         temp_dir.push("crs");
-        
+
         fs::create_dir_all(temp_dir.clone())?;
-        
-        
+
         copy(clone_to.clone(), temp_dir.clone(), &options)?;
-        
+
         temp_dir.push(template_name.unwrap());
 
         println!("Copy template to {} (temp)", temp_dir.display());
 
         let mut folder_path = temp_dir.clone().to_str().unwrap().to_string();
         folder_path.push_str("/template");
-
 
         let mut _json_data_file = String::new();
         if cli.config.is_some() {
@@ -569,18 +564,18 @@ fn main() -> Result<(), Box<dyn Error>> {
             _json_data_file = temp_dir.to_str().unwrap().to_string() + "/crs.json";
         }
 
+        let mut handlebars = Handlebars::new();
+
+        handlebars.register_helper("format", Box::new(format_helper));
+        handlebars.register_helper("ranking_label", Box::new(rank_helper));
+
         let data = make_data(
             "basic".to_string(),
             "https://github.com/0xMRTT/basic-template".to_string(),
             "0xMRTT".to_string(),
             "0xMRTT".to_string(),
-            _json_data_file,
+            _json_data_file.clone(),
         );
-
-        let mut handlebars = Handlebars::new();
-
-        handlebars.register_helper("format", Box::new(format_helper));
-        handlebars.register_helper("ranking_label", Box::new(rank_helper));
 
         if to != "generated" {
             to = generate_name(&mut handlebars, &to, &data);

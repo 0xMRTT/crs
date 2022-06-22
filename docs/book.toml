@@ -19,3 +19,14 @@ git-repository-url = "https://github.com/0xMRTT/crs"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/0xMRTT/crs/edit/master/docs/{path}"
 input-404 = "not-found.md"
+
+[output.html.print]
+enable = true    # include support for printable output
+page-break = true # insert page-break after each chapter
+
+[output.html.playground]
+editable = true         # allows editing the source code
+copyable = true          # include the copy button for copying code snippets
+copy-js = true           # includes the JavaScript for the code editor
+line-numbers = true     # displays line numbers for editable code
+runnable = true          # displays a run button for rust code

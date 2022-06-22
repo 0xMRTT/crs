@@ -17,7 +17,7 @@ copy-fonts = true
 no-section-label = false
 git-repository-url = "https://github.com/0xMRTT/crs"
 git-repository-icon = "fa-github"
-edit-url-template = "https://github.com/0xMRTT/crs/edit/master/docs/{path}"
+edit-url-template = "https://github.com/0xMRTT/crs/edit/main/docs/{path}"
 input-404 = "not-found.md"
 
 [output.html.print]

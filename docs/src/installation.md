@@ -1,6 +1,6 @@
 # Installation
 
-## From crates.io
+## From [crates.io](https://crates.io)
 
 You can simply run `cargo install crs` and you'll have a `crs` command in your PATH.
 After that, you can use `crs` to generate a project. 

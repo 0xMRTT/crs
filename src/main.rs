@@ -39,6 +39,9 @@ extern crate fs_extra;
 use fs_extra::dir::copy;
 use fs_extra::dir::CopyOptions;
 
+extern crate os_release_rs;
+use os_release_rs::OsRelease;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -112,6 +115,23 @@ pub fn make_data(
     template_data.insert("username".to_string(), to_json(template_username));
 
     crs_data.insert("template".to_string(), to_json(template_data));
+
+    let release = OsRelease::new().unwrap();
+    let mut os_data = Map::new();
+    os_data.insert("name".to_string(), to_json(release.name));
+    os_data.insert("version".to_string(), to_json(release.version));
+    os_data.insert("id".to_string(), to_json(release.id));
+    os_data.insert("pretty_name".to_string(), to_json(release.pretty_name));
+    os_data.insert("version_id".to_string(), to_json(release.version_id));
+    os_data.insert("version_codename".to_string(), to_json(release.version_codename));
+    os_data.insert("id_like".to_string(), to_json(release.id_like));
+    os_data.insert("build_id".to_string(), to_json(release.build_id));
+    os_data.insert("ansi_color".to_string(), to_json(release.ansi_color));
+    os_data.insert("homepage".to_string(), to_json(release.home_url));
+    os_data.insert("documentation".to_string(), to_json(release.documentation_url));
+    os_data.insert("logo".to_string(), to_json(release.logo));
+
+    crs_data.insert("os".to_string(), to_json(os_data));
 
     data.insert("crs".to_string(), to_json(crs_data));
 

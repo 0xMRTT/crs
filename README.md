@@ -94,3 +94,8 @@ And thanks to the creators and contributors of this awesome rust crates:
 * regex 
 * execute 
 * fs_extra 
+
+## Community
+
+* [Discord](https://discord.gg/Umnpj9vnjR)
+* [Matrix]()

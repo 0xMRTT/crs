@@ -42,6 +42,7 @@ use fs_extra::dir::CopyOptions;
 
 extern crate os_release_rs;
 use os_release_rs::OsRelease;
+use std::io;
 
 // define a custom helper
 fn format_helper(
@@ -184,24 +185,7 @@ fn clone_repo(url: String, to: &std::path::PathBuf) -> Result<git2::Repository, 
     };
 }
 
-#[derive(Parser)]
-#[clap(author, version, about, long_about = None)]
-struct Cli {
-    /// Optional name to operate on
-    template_url: Option<String>,
 
-    /// Sets a custom config file
-    #[clap(short, long, parse(from_os_str), value_name = "FILE")]
-    config: Option<PathBuf>,
-
-    /// Where CRS will generate the new project
-    #[clap(short, long)]
-    to: Option<String>,
-
-    /// List installed template
-    #[clap(short, long, value_name = "DIR")]
-    list_installed: bool,
-}
 
 fn build_cli() -> Command<'static> {
     Command::new("crs")
@@ -219,7 +203,6 @@ fn build_cli() -> Command<'static> {
                 .long("to")
                 .alias("to")
                 .value_name("DIR")
-                .short('t')
                 .help("Where crs will generate the new project")
                 .value_hint(ValueHint::AnyPath),
         )
@@ -246,6 +229,12 @@ fn build_cli() -> Command<'static> {
                 .value_parser(value_parser!(Shell)),
         )
 }
+
+fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
+    generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
+}
+
+
 fn list_installed() {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let template_store_path = &app_dirs.data_dir.clone();
@@ -528,18 +517,22 @@ fn run_post_hooks(clone_to: PathBuf) {
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    let cli = Cli::parse();
+    let cli = build_cli().get_matches();
 
     let mut to: String = "generated".to_string();
-    if cli.to.is_some() {
-        to = cli.to.unwrap();
+    if cli.is_present("to") {
+        to = cli.value_of("to").unwrap().to_string();
     }
 
-    if cli.list_installed {
+    if cli.is_present("list-installed") {
         list_installed();
         exit(0);
-    } else if cli.template_url.is_some() {
-        let template_url = cli.template_url.unwrap();
+    } else if let Ok(generator) = cli.value_of_t::<Shell>("generator") {
+        let mut cmd = build_cli();
+        eprintln!("Generating completion file for {}...", generator);
+        print_completions(generator, &mut cmd);
+    } else if cli.is_present("template_url") {
+        let template_url = cli.value_of("template_url").unwrap().to_string();
 
         println!("Generating a new project using {}", template_url);
 
@@ -635,8 +628,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         folder_path.push_str("/template");
 
         let mut _json_data_file = String::new();
-        if cli.config.is_some() {
-            _json_data_file = cli.config.unwrap().display().to_string();
+        if cli.is_present("config") {
+            _json_data_file = cli.value_of("config").unwrap().to_string();
         } else {
             _json_data_file = temp_dir.to_str().unwrap().to_string() + "/crs.json";
         }

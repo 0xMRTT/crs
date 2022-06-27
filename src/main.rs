@@ -17,6 +17,7 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
+use std::ops::Sub;
 use std::path;
 use std::path::Path;
 
@@ -224,9 +225,10 @@ fn build_cli() -> Command<'static> {
 
         )
         .arg(
-            Arg::new("generator")
-                .long("generate")
-                .value_parser(value_parser!(Shell)),
+            Arg::new("completion")
+            .long("completion")
+            .help("Generate completion script")
+            .value_name("SHELL")
         )
 }
 
@@ -527,10 +529,34 @@ fn main() -> Result<(), Box<dyn Error>> {
     if cli.is_present("list-installed") {
         list_installed();
         exit(0);
-    } else if let Ok(generator) = cli.value_of_t::<Shell>("generator") {
-        let mut cmd = build_cli();
-        eprintln!("Generating completion file for {}...", generator);
-        print_completions(generator, &mut cmd);
+    } else if cli.is_present("completion") {
+        match cli.value_of("completion") {
+            Some("bash") => {
+                generate(Shell::Bash, &mut build_cli(), "crs", &mut io::stdout());
+                exit(0);
+            }
+            Some("zsh") => {
+                generate(Shell::Zsh, &mut build_cli(), "crs", &mut io::stdout());
+                exit(0);
+            },
+            Some("fish") => {
+                generate(Shell::Fish, &mut build_cli(), "crs", &mut io::stdout());
+                exit(0);
+            },
+            Some("powershell") => {
+                generate(Shell::PowerShell, &mut build_cli(), "crs", &mut io::stdout());
+                exit(0);
+            },
+            Some("elvish") => {
+                generate(Shell::Elvish, &mut build_cli(), "crs", &mut io::stdout());
+                exit(0);
+            },    
+            _ => {
+                println!("Unknown completion type");
+                exit(1);
+            }
+        }
+        
     } else if cli.is_present("template_url") {
         let template_url = cli.value_of("template_url").unwrap().to_string();
 

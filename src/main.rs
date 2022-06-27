@@ -20,7 +20,8 @@ use std::io::{Read, Write};
 use std::path;
 use std::path::Path;
 
-use clap::{Parser, Subcommand};
+use clap::{value_parser, AppSettings, Arg, Command, Subcommand, ValueHint};
+use clap_complete::{generate, Generator, Shell};
 use std::path::PathBuf;
 
 use url::{ParseError, Url};
@@ -32,7 +33,7 @@ use inquire::*;
 use platform_dirs::{AppDirs, UserDirs};
 use regex::Regex;
 use std::process::exit;
-use std::process::{Command, Stdio};
+use std::process::{Command as StdCommand, Stdio};
 use walkdir::WalkDir;
 
 extern crate fs_extra;
@@ -123,12 +124,18 @@ pub fn make_data(
     os_data.insert("id".to_string(), to_json(release.id));
     os_data.insert("pretty_name".to_string(), to_json(release.pretty_name));
     os_data.insert("version_id".to_string(), to_json(release.version_id));
-    os_data.insert("version_codename".to_string(), to_json(release.version_codename));
+    os_data.insert(
+        "version_codename".to_string(),
+        to_json(release.version_codename),
+    );
     os_data.insert("id_like".to_string(), to_json(release.id_like));
     os_data.insert("build_id".to_string(), to_json(release.build_id));
     os_data.insert("ansi_color".to_string(), to_json(release.ansi_color));
     os_data.insert("homepage".to_string(), to_json(release.home_url));
-    os_data.insert("documentation".to_string(), to_json(release.documentation_url));
+    os_data.insert(
+        "documentation".to_string(),
+        to_json(release.documentation_url),
+    );
     os_data.insert("logo".to_string(), to_json(release.logo));
 
     crs_data.insert("os".to_string(), to_json(os_data));
@@ -196,6 +203,49 @@ struct Cli {
     list_installed: bool,
 }
 
+fn build_cli() -> Command<'static> {
+    Command::new("crs")
+        .arg(
+            Arg::new("template_url")
+                .long("template-url")
+                .alias("template")
+                .value_name("URL")
+                .short('t')
+                .help("Where crs will download the template")
+                .value_hint(ValueHint::Url),
+        )
+        .arg(
+            Arg::new("to")
+                .long("to")
+                .alias("to")
+                .value_name("DIR")
+                .short('t')
+                .help("Where crs will generate the new project")
+                .value_hint(ValueHint::AnyPath),
+        )
+        .arg(
+            Arg::new("list-installed")
+                .long("list-installed")
+                .alias("installed")
+                .short('l')
+                .help("List installed template"),
+        )
+        .arg(
+            Arg::new("config")
+                .long("config")
+                .alias("config")
+                .value_name("FILE")
+                .short('c')
+                .value_hint(ValueHint::AnyPath)
+                .help("Sets a custom config file"),
+
+        )
+        .arg(
+            Arg::new("generator")
+                .long("generate")
+                .value_parser(value_parser!(Shell)),
+        )
+}
 fn list_installed() {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let template_store_path = &app_dirs.data_dir.clone();
@@ -453,7 +503,7 @@ fn run_post_hooks(clone_to: PathBuf) {
         println!("command: {}", command_str);
         println!("args: {:?}", _args);
 
-        let mut child = Command::new(command_str)
+        let mut child = StdCommand::new(command_str)
             .args(_args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())

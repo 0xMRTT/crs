@@ -106,7 +106,7 @@ are deeply concerned about using a proprietary system like GitHub to develop our
 where the project contributors are actively discussing how we can move away from GitHub in the long term.  We urge you to read about the [Give up GitHub](https://GiveUpGitHub.org) campaign from [the Software Freedom Conservancy](https://sfconservancy.org) to understand some of the reasons why GitHub is not
 a good place to host FOSS projects.
 
-If you are a contributor who personally has already quit using GitHub, please [check this resource](INSERT_LINK) for how to send us contributions without using
+If you are a contributor who personally has already quit using GitHub, please [open your issue here](https://codeberg.org/0xMRTT/crs/issues) and [your PR here](https://codeberg.org/0xMRTT/crs/pulls) for how to send us contributions without using
 GitHub directly.
 
 ![Logo of the GiveUpGitHub campaign](https://sfconservancy.org/img/GiveUpGitHub.png)

@@ -1,7 +1,5 @@
 # C.R.S.
 
-There is an alternative repo on [codeberg](https://codeberg.org/0xMRTT/crs) : [https://codeberg.org/0xMRTT/crs](https://codeberg.org/0xMRTT/crs)
-
 [![Rust](https://github.com/0xMRTT/crs/actions/workflows/rust.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust.yml)
 [![rust-clippy analyze](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/0xMRTT/crs/actions/workflows/rust-clippy.yml)
 

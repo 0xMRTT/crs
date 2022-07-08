@@ -14,9 +14,9 @@ It's inspired of `cookiecutter` (#20). It's written in rust for safety and rapid
 ### From crates.io
 
 You can simply run `cargo install crs` and you'll have a `crs` command in your PATH.
-After that, you can use `crs` to generate a project. 
+After that, you can use `crs` to generate a project.
 
-``` shell
+```shell
 cargo install crs
 crs --help
 ```
@@ -26,7 +26,8 @@ crs --help
 You can download it on release page and simply run the binary
 
 WARNING: not ready yet
-``` 
+
+```
 wget https://github.com/0xMRTT/crs/
 chmod +x crs
 ./crs
@@ -72,28 +73,27 @@ OPTIONS:
 
 This project is inspired to this awesome projects:
 
-* cookiecutter 
+- cookiecutter
 
 And thanks to the creators and contributors of this awesome rust crates:
 
-* handlebars 
-* serde_json 
-* serde_derive 
-* serde 
-* env_logger 
-* git2 
-* clap 
-* url
-* walkdir
-* platform-dirs 
-* chrono
-* inquire
-* regex 
-* execute 
-* fs_extra 
+- handlebars
+- serde_json
+- serde_derive
+- serde
+- env_logger
+- git2
+- clap
+- url
+- walkdir
+- platform-dirs
+- chrono
+- inquire
+- regex
+- execute
+- fs_extra
 
 ## Community
 
-* [Discord](https://discord.gg/Umnpj9vnjR)
-* [Matrix]()
-
+- [Discord](https://discord.gg/Umnpj9vnjR)
+- [Matrix]()

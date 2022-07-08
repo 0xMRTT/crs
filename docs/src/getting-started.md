@@ -2,7 +2,7 @@
 
 After installing crs, you can run it with only one paramaeter: the URL of the template.
 
-``` sh
+```sh
 crs https://github.com/0xMRTT/rust-template
 ```
 

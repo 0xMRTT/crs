@@ -186,8 +186,6 @@ fn clone_repo(url: String, to: &std::path::PathBuf) -> Result<git2::Repository, 
     };
 }
 
-
-
 fn build_cli() -> Command<'static> {
     Command::new("crs")
         .arg(
@@ -222,20 +220,18 @@ fn build_cli() -> Command<'static> {
                 .short('c')
                 .value_hint(ValueHint::AnyPath)
                 .help("Sets a custom config file"),
-
         )
         .arg(
             Arg::new("completion")
-            .long("completion")
-            .help("Generate completion script")
-            .value_name("SHELL")
+                .long("completion")
+                .help("Generate completion script")
+                .value_name("SHELL"),
         )
 }
 
 fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
-
 
 fn list_installed() {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
@@ -538,25 +534,29 @@ fn main() -> Result<(), Box<dyn Error>> {
             Some("zsh") => {
                 generate(Shell::Zsh, &mut build_cli(), "crs", &mut io::stdout());
                 exit(0);
-            },
+            }
             Some("fish") => {
                 generate(Shell::Fish, &mut build_cli(), "crs", &mut io::stdout());
                 exit(0);
-            },
+            }
             Some("powershell") => {
-                generate(Shell::PowerShell, &mut build_cli(), "crs", &mut io::stdout());
+                generate(
+                    Shell::PowerShell,
+                    &mut build_cli(),
+                    "crs",
+                    &mut io::stdout(),
+                );
                 exit(0);
-            },
+            }
             Some("elvish") => {
                 generate(Shell::Elvish, &mut build_cli(), "crs", &mut io::stdout());
                 exit(0);
-            },    
+            }
             _ => {
                 println!("Unknown completion type");
                 exit(1);
             }
         }
-        
     } else if cli.is_present("template_url") {
         let template_url = cli.value_of("template_url").unwrap().to_string();
 

@@ -151,17 +151,20 @@ pub fn make_data(
 fn get_user_default() -> serde_json::Map<std::string::String, Value> {
     let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
     let user_defaults = app_dirs.config_dir.join("defaults.json");
-    let json_data = {
-        // Load the first file into a string.
-        let text = std::fs::read_to_string(user_defaults).unwrap();
-
-        // Parse the string into a dynamically-typed JSON structure.
-        serde_json::from_str::<Value>(&text).unwrap()
-    };
     let mut data = Map::new();
-    for (key, value) in json_data.as_object().unwrap().iter() {
-        data.insert(key.to_string(), to_json(value.as_str().unwrap()));
+    if user_defaults.exists() {
+        let json_data = {
+            // Load the first file into a string.
+            let text = std::fs::read_to_string(user_defaults).unwrap();
+
+            // Parse the string into a dynamically-typed JSON structure.
+            serde_json::from_str::<Value>(&text).unwrap()
+        };
+        for (key, value) in json_data.as_object().unwrap().iter() {
+            data.insert(key.to_string(), to_json(value.as_str().unwrap()));
+        }
     }
+
     data
 }
 

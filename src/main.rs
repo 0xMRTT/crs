@@ -45,6 +45,8 @@ extern crate os_release_rs;
 use os_release_rs::OsRelease;
 use std::io;
 
+use simple_i18n::i18n;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,
@@ -688,7 +690,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Deleting temp dir");
         fs::remove_dir_all(temp_dir.clone())?;
     } else {
-        println!("No template url provided. Use --help for more information.");
+        println!("{}", i18n!("err.no_template_url"));
     }
     Ok(())
 }

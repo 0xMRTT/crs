@@ -48,6 +48,8 @@ use std::io;
 #[macro_use]
 extern crate locales;
 
+use locales::t;
+
 // define a custom helper
 fn format_helper(
     h: &Helper,

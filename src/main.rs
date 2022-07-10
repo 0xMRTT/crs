@@ -45,11 +45,6 @@ extern crate os_release_rs;
 use os_release_rs::OsRelease;
 use std::io;
 
-#[macro_use]
-extern crate locales;
-
-use locales::t;
-
 // define a custom helper
 fn format_helper(
     h: &Helper,

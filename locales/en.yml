@@ -1,0 +1,5 @@
+---
+en: 
+  generate:
+    new_project: Generating a new project using %{name}
+

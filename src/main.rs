@@ -569,7 +569,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else if cli.is_present("template_url") {
         let template_url = cli.value_of("template_url").unwrap().to_string();
 
-        println!("Generating a new project using {}", template_url);
+        println!("{}", t!("generate.new_project", name = template_url.as_str()));
 
         let app_dirs = AppDirs::new(Some("crs"), false).unwrap();
         let template_store_path = &app_dirs.data_dir.clone();

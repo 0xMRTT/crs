@@ -1,0 +1,5 @@
+---
+fr: 
+  generate:
+    new_project: Génére un nouveau projet en utilisant %{name}
+

@@ -1,0 +1,7 @@
+{
+  "err.no_template_url": "Aucune url fournis. Utilisez --help pour plus d'information.",
+  "generate.deleting_temp": "Suppression du répertoire temporaire",
+  "generate.run_hooks": "Exécutez les hooks...",
+  "generate.success": "Projet généré. Bon codage !",
+  "generate.start": "Génération du projet vers {} à partir de {}"
+}

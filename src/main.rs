@@ -683,11 +683,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         println!("Generating project to {} from {}", to, folder_path);
         generate_folder(&mut handlebars, &folder_path, &to, &data);
-        println!("Project generated. Happy coding!");
+        println!("{}", i18n!("generate.success"));
         env::set_current_dir(to)?;
-        println!("Run hooks...");
+        println!("{}", i18n!("generate.run_hooks"));
         run_hooks(clone_to);
-        println!("Deleting temp dir");
+        println!("{}", i18n!("generate.deleting_temp"));
         fs::remove_dir_all(temp_dir.clone())?;
     } else {
         println!("{}", i18n!("err.no_template_url"));

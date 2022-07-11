@@ -1,3 +1,7 @@
 {
-  "err.no_template_url": "No template url provided. Use --help for more information."
+  "err.no_template_url": "No template url provided. Use --help for more information.",
+  "generate.deleting_temp": "Deleting temp dir",
+  "generate.run_hooks": "Run hooks...",
+  "generate.success": "Project generated. Happy coding!",
+  "generate.start": "Generating project to {} from {}"
 }

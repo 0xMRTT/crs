@@ -1,3 +1,4 @@
 ---
-de: {}
-
+de:
+  generate:
+    new_project: Erstellen eines neuen Projekts mit %{name}

@@ -1,5 +1,22 @@
 ---
-fr: 
+fr:
   generate:
     new_project: Génére un nouveau projet en utilisant %{name}
-
+    store_dir: Création du répertoire dans %{dir}
+    thanks: Merci à @%{username} d'avoir créé %{name}. Vous pouvez créer votre propre
+      template en lisant la documentation.
+    deleting_old_template: Suppression de l'ancien template (%{template})
+    clone: Cloner %{from} vers %{to}
+    success_download: Template téléchargé avec succès.
+    copy_to_temp: Copier le template dans %{to} (temp)
+    generate_to: Génération du projet à %{to} à partir de %{from}
+    success: Projet généré. Bon codage !
+    deleting_temp: Suppression du répertoire temporaire
+    warn:
+      already_downloaded: Template déjà téléchargé. Voulez-vous retélécharger le template ?
+      skip_redownload: Ignorez le retéléchargement du template.
+    err:
+      message: Erreur, réessayez plus tard
+      no_url: Aucune URL de template fournie. Utilisez --help pour plus d'informations.
+  hooks:
+    run: Exécution des hooks...

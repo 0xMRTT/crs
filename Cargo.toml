@@ -26,3 +26,8 @@ fs_extra = "1.2.0"
 os-release-rs = "0.1.0"
 clap_complete = "3.2.3"
 rust-i18n = "0"
+
+[package.metadata.i18n]
+available-locales = ["en", "fr", "de"]
+default-locale = "en"
+oad-path = "locales"

@@ -656,7 +656,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         temp_dir.push(template_name.unwrap());
 
-        println!("{}", t!("generate.copy_to_temp", temp=temp_dir.display().to_string().as_str()));
+        println!("{}", t!("generate.copy_to_temp", to=temp_dir.display().to_string().as_str()));
 
         let mut folder_path = temp_dir.clone().to_str().unwrap().to_string();
         folder_path.push_str("/template");

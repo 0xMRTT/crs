@@ -575,8 +575,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let template_store_path = &app_dirs.data_dir.clone();
 
         println!(
-            "Creating store directory in {}",
-            template_store_path.to_str().unwrap()
+            "{}", t!("generate.store_dir", dir = template_store_path.to_str().unwrap())
         );
         fs::create_dir_all(&app_dirs.data_dir).unwrap();
 
@@ -591,11 +590,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         let current_dir = std::env::current_dir()?;
 
-        println!("Thanks to @{} for creating {}. You can create your own template. RTD for more (https://0xMRTT.github.io/docs/crs)", username.unwrap(), template_name.unwrap());
+        println!("{}", t!("generate.thanks", username = username.unwrap(), name = template_name.unwrap()));
         if clone_to.exists() {
             env::set_current_dir(template_store_path)?;
             let redownload = Confirm::new(
-                "Template already downloaded. Do you want to re-download the template ?",
+                t!("generate.warn.already_downloaded").as_str(),
             )
             .with_default(true)
             .prompt();
@@ -604,38 +603,38 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Ok(true) => {
                     let to_delete = template_name.unwrap();
                     let path_to_delete = Path::new(&to_delete);
-                    println!("Deleting old template ({})", &to_delete);
+                    println!("{}", t!("generate.deleting_old_template", template = &to_delete));
                     fs::remove_dir_all(path_to_delete)?;
-                    println!("Clone {} to {:#?}", template_url, clone_to);
+                    println!("{}", t!("generate.clone", from = template_url.as_str(), to = clone_to.to_str().unwrap()));
                     clone_repo(template_url, &clone_to).expect("");
-                    println!("Successfuly downloaded template.");
+                    println!("{}", t!("generate.success_download"));
                 }
                 Ok(false) => {
                     let sure = Confirm::new("Are you sure ?").with_default(false).prompt();
 
                     match sure {
-                        Ok(true) => println!("Skip re-downloading of the template."),
+                        Ok(true) => println!("{}", t!("generate.warn.skip_redownload")),
                         Ok(false) => {
                             let to_delete = template_name.unwrap();
                             let path_to_delete = Path::new(&to_delete);
-                            println!("Deleting old template ({})", &to_delete);
+                            println!("{}", t!("generate.deleting_old_template", template = &to_delete));
                             fs::remove_dir_all(path_to_delete)?;
-                            println!("Clone {} to {:#?}", template_url, clone_to);
+                            println!("{}", t!("generate.clone", from = template_url.as_str(), to = clone_to.to_str().unwrap()));
                             clone_repo(template_url, &clone_to).expect("");
-                            println!("Successfuly downloaded template.");
+                            println!("{}", t!("generate.success_download"));
                         }
-                        Err(_) => println!("Error, try again later"),
+                        Err(_) => println!("{}", t!("generate.err.message")),
                     }
                 }
-                Err(_) => println!("Error, try again later"),
+                Err(_) => println!("{}", t!("generate.err.message")),
             }
             env::set_current_dir(current_dir)?; // Come back to the current directory
         } else {
-            println!("Clone {} to {:#?}", template_url, clone_to);
+            println!("{}", t!("generate.clone", from = template_url.as_str(), to = clone_to.to_str().unwrap()));
 
             clone_repo(template_url, &clone_to).expect("");
 
-            println!("Successfuly downloaded template.");
+            println!("{}", t!("generate.success_download"));
         }
 
         let mut temp_dir = env::temp_dir();
@@ -657,7 +656,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         temp_dir.push(template_name.unwrap());
 
-        println!("Copy template to {} (temp)", temp_dir.display());
+        println!("{}", t!("generate.copy_to_temp", temp=temp_dir.display().to_string().as_str()));
 
         let mut folder_path = temp_dir.clone().to_str().unwrap().to_string();
         folder_path.push_str("/template");
@@ -685,16 +684,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         if to != "generated" {
             to = generate_name(&mut handlebars, &to, &data);
         }
-        println!("Generating project to {} from {}", to, folder_path);
+        println!("{}", t!("generate.generate_to",  to=to.to_string().as_str(), from=folder_path.to_string().as_str()));
         generate_folder(&mut handlebars, &folder_path, &to, &data);
-        println!("Project generated. Happy coding!");
+        println!("{}", t!("generate.success"));
         env::set_current_dir(to)?;
-        println!("Run hooks...");
+        println!("{}", t!("hooks.run"));
         run_hooks(clone_to);
-        println!("Deleting temp dir");
+        println!("{}", t!("generate.deleting_temp"));
         fs::remove_dir_all(temp_dir.clone())?;
     } else {
-        println!("No template url provided. Use --help for more information.");
+        println!("{}", t!("generate.err.no_url"));
     }
     Ok(())
 }

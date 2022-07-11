@@ -48,6 +48,8 @@ use std::io;
 #[macro_use]
 extern crate rust_i18n;
 
+use current_locale;
+
 // Init translations for current crate.
 i18n!("locales");
 
@@ -525,6 +527,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let cli = build_cli().get_matches();
+
+    let current_locale = current_locale::current_locale()?;
+    let locale: Vec<_> = current_locale.split("-").collect();
+
+    let l = locale[0].clone();
+
+    let locales = vec!["fr", "de", "en"];
+
+    if locales.contains(&l) {
+        rust_i18n::set_locale(l);
+    } else {
+        rust_i18n::set_locale("en");
+    }
 
     let mut to: String = "generated".to_string();
     if cli.is_present("to") {

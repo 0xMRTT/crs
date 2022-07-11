@@ -45,7 +45,11 @@ extern crate os_release_rs;
 use os_release_rs::OsRelease;
 use std::io;
 
-use simple_i18n::i18n;
+#[macro_use]
+extern crate rust_i18n;
+
+// Init translations for current crate.
+i18n!("locales");
 
 // define a custom helper
 fn format_helper(

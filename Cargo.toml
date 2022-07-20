@@ -14,7 +14,7 @@ serde_derive = "1.0.139"
 serde = "1.0.139"
 env_logger = "0.9"
 git2 = "0.14.4"
-clap = { version = "3.2.12", features = ["derive"] }
+clap = { version = "3.2.13", features = ["derive"] }
 url = "2.2.2"
 walkdir = "2"
 platform-dirs = "0.3.0"

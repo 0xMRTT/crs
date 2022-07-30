@@ -1,4 +1,24 @@
 ---
-de:
+de: 
   generate:
     new_project: Erstellen eines neuen Projekts mit %{name}
+    store_dir: Erstelle Speicherverzeichnis in %{dir}
+    thanks: Danke an @%{username} für die Erstellung von %{name}. Sie können Ihre eigenes Template erstellen. RTD für mehr (https://0xMRTT.github.io/docs/crs)
+    deleting_old_template: Lösche altes Template (%{template})
+    clone: 	Klone von %{from} nach %{to}
+    success_download: Template erfolgreich heruntergeladen.
+    copy_to_temp: Template kopieren nach %{to} (temp)
+    generate_to: Generieren des Projekts für %{to} von %{from}
+    success: Projekt generiert. Viel Spaß beim Coden!
+    deleting_temp: Löschen des temporären Verzeichnisses
+
+    warn:
+      already_downloaded: Template bereits heruntergeladen. Möchten Sie das Template erneut herunterladen?
+      skip_redownload: Überspringe erneutes Herunterladen des Templates.
+    
+    err:
+      message: Fehler, versuchen Sie es später erneut
+      no_url: Keine Template-URL angegeben. Verwenden Sie --help für weitere Informationen.
+
+  hooks:
+    run: Hooks ausführen...
